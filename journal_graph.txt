@@ -1,0 +1,3 @@
+digraph G {
+  uniconodo [shape=box, label="('mkfs', {'type': 'full', 'id': '532disco', 'fs': 'ext3'})\n"];
+}

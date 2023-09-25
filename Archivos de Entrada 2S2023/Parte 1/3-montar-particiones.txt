@@ -1,0 +1,12 @@
+#MOUNT
+mount -path=/tmp/d1.dsk -name=Part1
+mount -path=/tmp/d2.dsk -name=Part1
+mount -path=/tmp/d3.dsk -name=Part1
+
+########reporte disk del estado inicial de las particiones
+rep -id=531d1 -name=disk #id 531d1
+pause
+rep -id=532d2 -name=disk #id 531d2
+pause
+rep -id=533d3 -name=disk #id 531d3
+pause

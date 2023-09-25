@@ -1,0 +1,9 @@
+1,G,root
+1,U,root,root,123
+2,G,Archivos
+2,U,Archivos,user4,user4
+0,G,Arqui
+4,G,Orga
+5,G,Compi_2
+5,U,Compi_2,user2,user2
+0,U,Compi_2,user3,user3

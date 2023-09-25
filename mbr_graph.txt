@@ -1,0 +1,29 @@
+digraph G {
+subgraph cluster_mbr0 { label = "mbr0" style = filled fillcolor = "orange"
+3 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD>Attribute</TD>
+    <TD>Value</TD>
+  </TR>
+  <TR>
+    <TD>mbr_tamano</TD>
+    <TD>105906176</TD>
+  </TR>
+  <TR>
+    <TD>mbr_fecha_creacion</TD>
+    <TD>1695618436.5482347</TD>
+  </TR>
+  <TR>
+    <TD>mbr_dsk_signature</TD>
+    <TD>501880</TD>
+  </TR>
+  <TR>
+    <TD>fit</TD>
+    <TD>WF</TD>
+  </TR>
+</TABLE>> shape=box];
+
+node [shape=record];
+bloques3 [label="{<content0> Partition: name=empty, size=26214400 bytes,  unit=M, type=P, status=0, fit=BF, byte_inicio=165 | <content1> Partition: name=Part2, size=26214400 bytes,  unit=M, type=P, status=1, fit=BF, byte_inicio=26214565 | <content2> Partition: name=Part3, size=26214400 bytes,  unit=M, type=P, status=1, fit=BF, byte_inicio=52428965 | <content3> Partition: name=Part4, size=26214400 bytes,  unit=M, type=P, status=1, fit=BF, byte_inicio=78643365 | 
+}"];}
+}

@@ -1,0 +1,15 @@
+digraph G {
+node [shape=none];
+disk [label=<
+<TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0">
+<TR><TD colspan="5">533d3</TD></TR>
+<TR>
+<TD>MBR</TD>
+<TD>LIBRE</TD>
+<TD>primaria: Part2</TD>
+<TD>primaria: Part3</TD>
+<TD>primaria: Part4</TD></TR>
+</TABLE>
+>];
+}
+                            

@@ -1,0 +1,26 @@
+#CONFIGURACION INICIAL
+mkdisk -size=112 -unit=M -path=/home/parte2/disco.dsk
+
+fdisk -type=P -unit=M -name=Part1 -size=25 -path=/home/parte2/disco.dsk
+fdisk -type=P -unit=M -name=Part2 -size=25 -path=/home/parte2/disco.dsk
+fdisk -type=P -unit=M -name=Part3 -size=25 -path=/home/parte2/disco.dsk
+fdisk -type=P -unit=M -name=Part4 -size=25 -path=/home/parte2/disco.dsk
+
+mount -path=/home/parte2/disco.dsk -name=Part1 #id 531disco
+mount -path=/home/parte2/disco.dsk -name=Part2 #id 532disco
+mount -path=/home/parte2/disco.dsk -name=Part3 #id 533disco
+mount -path=/home/parte2/disco.dsk -name=Part4 #id 534disco
+
+#MKFS A PARTICIONES
+mkfs -type=full -id=531disco
+mkfs -type=full -id=532disco -fs=ext3
+
+#REPORTES INICIALES
+rep -id=531disco -path="/home/parte2/inicial/ext2_sb_1.pdf" -name=sb
+pause
+rep -id=531disco -path="/home/parte2/inicial/ext2_tree_1.pdf" -name=tree
+pause
+rep -id=532disco -path="/home/parte2/inicial/ext3_sb_1.pdf" -name=sb
+pause
+rep -id=532disco -path="/home/parte2/inicial/ext3_tree_1.pdf" -name=tree
+pause

@@ -1,0 +1,311 @@
+#-----------------
+# Parte 2 - SISTEMA DE ARCHIVOS
+#----------------
+
+#CONFIGURACION INICIAL
+mkdisk -size=112 -unit=M -path=/home/parte2/disco.dsk
+
+fdisk -type=P -unit=M -name=Part1 -size=25 -path=/home/parte2/disco.dsk
+fdisk -type=P -unit=M -name=Part2 -size=25 -path=/home/parte2/disco.dsk
+fdisk -type=P -unit=M -name=Part3 -size=25 -path=/home/parte2/disco.dsk
+fdisk -type=P -unit=M -name=Part4 -size=25 -path=/home/parte2/disco.dsk
+
+mount -path=/home/parte2/disco.dsk -name=Part1 #id 531disco
+mount -path=/home/parte2/disco.dsk -name=Part2 #id 532disco
+mount -path=/home/parte2/disco.dsk -name=Part3 #id 533disco
+mount -path=/home/parte2/disco.dsk -name=Part4 #id 534disco
+
+#MKFS A PARTICIONES
+mkfs -type=full -id=531disco
+mkfs -type=full -id=532disco -fs=ext3
+
+#REPORTES INICIALES
+rep -id=531disco  -name=sb
+rep -id=531disco  -name=tree
+pause
+rep -id=532disco  -name=sb
+rep -id=532disco  -name=tree
+pause
+#INICIO DE SESION
+
+#Debe dar error porque no existe el usuario roca
+login -pass=567 -user=roca -id=531disco
+#Debe dar error porque no existe nada activo
+logout
+
+login -pass=123 -user=root -id=531disco
+
+pause
+
+#CREACION DE GRUPOS
+mkusr -user=user1 -grp=root -pass=user1
+mkgrp -name=Archivos
+mkgrp -name=Arqui
+mkgrp -name=Orga
+mkgrp -name=Compi_2
+
+#Validar cambios en el archivo
+cat -file1=/users.txt
+pause
+#ELIMINACION DE GRUPOS
+rmgrp -name=Arqui
+
+#Validar cambios en el archivo
+cat -file1=/users.txt
+pause
+#CREACION DE USUARIOS
+
+mkusr -user=user2 -grp=Compi_2 -pass=user2
+mkusr -user=user3 -grp=Compi_2 -pass=user3
+mkusr -user=user4 -grp=Compi_2 -pass=user4
+
+#Validar cambios en el archivo
+cat -file1=/users.txt
+pause
+#ELIMINACION DE USUARIOS
+rmusr -user=user3
+
+#Validar cambios en el archivo
+cat -file1=/users.txt
+pause
+#CAMBIAR USUARIO DE GRUPO
+chgrp -user=user4 -grp=Archivos
+
+#Validar cambios en el archivo
+cat -file1=/users.txt
+pause
+pause
+
+#CREACION DE CARPETAS
+mkdir -r -path=/home/archivos/mia/fase2
+mkdir -r -path=/home/archivos/mia/carpeta2
+mkdir -r -path=/home/archivos/mia/z
+mkdir -r -path=/home/archivos/mia/carpeta3/carpeta7/carpeta8/carpeta9/carpeta10/carpeta11
+mkdir -r -path=/home/archivos/mia/carpeta4/carpeta7/carpeta8/carpeta9/carpeta10/carpeta11/carpeta7/carpeta8/carpeta9/carpeta10/carpeta11
+mkdir -path=/home/archivos/mia/carpeta2/a1 -r
+mkdir -path=/home/archivos/mia/carpeta2/a2  -r
+mkdir -path=/home/archivos/mia/carpeta2/a3  -r
+mkdir -path=/home/archivos/mia/carpeta2/a4  -r
+mkdir -path=/home/archivos/mia/carpeta2/a5  -r
+mkdir -path=/home/archivos/mia/carpeta2/a6  -r
+mkdir -path=/home/archivos/mia/carpeta2/a7  -r
+mkdir -path=/home/archivos/mia/carpeta2/a8  -r
+mkdir -path=/home/archivos/mia/carpeta2/a9  -r
+mkdir -path=/home/archivos/mia/carpeta2/a10 -r
+mkdir -path=/home/archivos/mia/fase2/a1 -r
+mkdir -path=/home/archivos/mia/fase2/a2 -r
+mkdir -path=/home/archivos/mia/fase2/a3 -r
+mkdir -path=/home/archivos/mia/fase2/a4 -r
+mkdir -path=/home/archivos/mia/fase2/a5 -r
+mkdir -path=/home/archivos/mia/fase2/a6 -r
+mkdir -path=/home/archivos/mia/fase2/a7 -r
+mkdir -path=/home/archivos/mia/fase2/a8 -r
+mkdir -path=/home/archivos/mia/fase2/a9 -r
+mkdir -path=/home/archivos/mia/fase2/a10    -r
+mkdir -path=/home/archivos/mia/fase2/a11    -r
+mkdir -path=/home/archivos/mia/fase2/a12    -r
+mkdir -path=/home/archivos/mia/fase2/a13    -r
+mkdir -path=/home/archivos/mia/fase2/a14    -r
+mkdir -path=/home/archivos/mia/fase2/a15    -r
+mkdir -path=/home/archivos/mia/fase2/a16    -r
+mkdir -path=/home/archivos/mia/fase2/a17    -r
+mkdir -path=/home/archivos/mia/fase2/a18    -r
+mkdir -path=/home/archivos/mia/fase2/a19    -r
+mkdir -path=/home/archivos/mia/fase2/a20    -r
+mkdir -path=/home/archivos/mia/fase2/a21    -r
+mkdir -path=/home/archivos/mia/fase2/a22    -r
+mkdir -path=/home/archivos/mia/fase2/a23    -r
+mkdir -path=/home/archivos/mia/fase2/a24    -r
+mkdir -path=/home/archivos/mia/fase2/a25    -r
+mkdir -path=/home/archivos/mia/fase2/a26    -r
+mkdir -path=/home/archivos/mia/fase2/a27    -r
+mkdir -path=/home/archivos/mia/fase2/a28    -r
+mkdir -path=/home/archivos/mia/fase2/a29    -r
+mkdir -path=/home/archivos/mia/fase2/a30    -r
+mkdir -path=/home/archivos/mia/fase2/a31    -r
+mkdir -path=/home/archivos/mia/fase2/a32    -r
+mkdir -path=/home/archivos/mia/fase2/a33    -r
+mkdir -path=/home/archivos/mia/fase2/a34    -r
+mkdir -path=/home/archivos/mia/fase2/a35    -r
+mkdir -path=/home/archivos/mia/fase2/a36    -r
+mkdir -path=/home/archivos/mia/fase2/a37    -r
+mkdir -path=/home/archivos/mia/fase2/a38    -r
+mkdir -path=/home/archivos/mia/fase2/a39    -r
+mkdir -path=/home/archivos/mia/fase2/a40    -r
+mkdir -path=/home/archivos/mia/fase2/a41    -r
+mkdir -path=/home/archivos/mia/fase2/a42    -r
+mkdir -path=/home/archivos/mia/fase2/a43    -r
+mkdir -path=/home/archivos/mia/fase2/a44    -r
+mkdir -path=/home/archivos/mia/fase2/a45    -r
+mkdir -path=/home/archivos/mia/fase2/a46    -r
+#Debe dar error porque ya existe a46
+mkdir -path=/home/archivos/mia/fase2/a46
+
+pause
+
+#REPORTES PARA VERIFICAR INDIRECTOS
+rep -id=531disco  -name=sb
+rep -id=531disco  -name=tree
+pause
+#CREACION DE ARCHIVOS
+logout
+#Cambiamos de usuario para despues validar chown y chmod
+login -user=user1 -pass=user1 -id=531disco
+#Archivo 
+mkfile -path=/home/b1.txt -size=75 -r
+#Debe dar error ruta no existe
+mkfile -path=/home/Noexiste/b1.txt -size=75
+#Debe dar error size negativo
+mkfile -path="/home/b1.txt" -size=-45 -r
+#indirectos
+mkfile -path=/home/b1_1.txt -size=10000 -r
+#archivo con archivo de la pc
+mkfile -path="/home/entrada.txt" -cont=/contenido.txt -r
+#home/bcont.txt
+
+#REPORTES PARA VERIFICAR INDIRECTOS
+rep -id=531disco  -name=sb
+rep -id=531disco  -name=tree
+
+pause
+
+#ELIMINACION DE CONTENIDO
+#Carpeta Directos
+remove -path=/home/archivos/mia/fase2/a46
+#Carpeta indirectos
+remove -path="/home/archivos/mia/fase2/b1"
+
+#REPORTES PARA VERIFICAR CAMBIOS
+rep -id=531disco  -name=sb
+rep -id=531disco  -name=tree
+
+pause
+
+#MOVER CONTENIDO
+move -path="/home/archivos/mia/fase2/a45" -destino="/home"
+
+#REPORTES PARA VERIFICAR CAMBIOS
+rep -id=531disco  -name=sb
+rep -id=531disco  -name=tree
+
+pause
+
+#REPORTES ANTES DE LA PERDIDA
+#Ultimo reporte antes de la perdida
+rep -id=531disco  -Ruta="/users.txt" -name=file
+#rep -id=531disco -Ruta="/" -name=ls
+rep -id=531disco  -name=sb
+rep -id=531disco  -name=tree
+rep -id=531disco  -name=inode
+rep -id=531disco  -name=block
+rep -id=531disco  -name=bm_inode
+rep -id=531disco  -name=bm_bloc
+
+pause
+
+#PERDIDA
+loss -id=532disco
+
+rep -id=532disco  -name=sb
+rep -id=532disco  -name=tree
+rep -id=532disco  -name=inode
+rep -id=532disco  -name=block
+rep -id=532disco  -name=bm_inode
+rep -id=532disco  -name=bm_bloc
+rep -id=532disco  -name=journal
+
+pause
+
+#Recovery
+recovery -id=532disco
+
+rep -id=532disco  -name=sb
+rep -id=532disco  -name=tree
+rep -id=532disco  -name=inode
+rep -id=532disco  -name=block
+rep -id=532disco -name=bm_inode
+rep -id=532disco  -name=bm_bloc
+rep -id=532disco  -name=journal
+pause
+
+logout
+login -pass=123 -user=root -id=531disco
+
+#Chmod
+chmod -path=/home/archivos/mia/carpeta2 -ugo=001 -r
+chmod -path="/home/b1.txt" -ugo=001
+logout
+login -user=user1 -pass=user1 -id=531disco
+#No debe dejar por permisos de escritura
+mkdir -r  -path=/home/archivos/mia/carpeta2/Esta/no/se/debe/crear/por/permisos
+#No debe dejar por permisos de lectura
+cat -file1=/home/b1.txt
+pause
+logout
+pause
+
+#Renombrar
+login -pass=123 -user=root -id=531disco
+rename -path=/home/archivos/mia/fase1 -name=fase1renombre
+rename -path="/home/archivos/mia/fase2/b1" -name=renindirecto
+logout
+login -user=user1 -pass=user1 -id=531disco
+#Este debe fallar por permisos de escritura
+rename -path=/home/b1.txt -name=brenombre.txt
+logout
+#Pausa para el renombrar
+pause
+
+login -pass=123 -user=root -id=531disco
+
+#Indirectos dobles
+mkfile -path="/home/b2ble.txt" -size=18000
+#Indirectos triples
+mkfile -path="/home/b3ple.txt" -size=280000
+#Reporte 8
+rep -id=53YDiscoZ  -name=tree
+pause 
+
+#Copiar
+#Debe dar error porque destino no existe
+copy -path=/home/archivos/mia/carpeta3 -destino=/home/archivos/mia/yo/no/existo
+copy -path=/home/archivos/mia/carpeta3 -destino=/home/archivos/mia/carpeta2
+#Copiar indirectos
+copy -path=/home/archivos/mia/fase2 -destino=/home/archivos/mia/carpeta2
+#Reporte 9
+rep -id=531disco -name=tree
+pause 
+
+#FIND
+find -path="/home" -name=*
+pause
+find -path="/home" -name=?
+#Debe dar error porque no exxiste path
+find -path="/no/existo" -name=?
+pause
+
+#EDIT
+edit -path="/home/b3ple.txt" -cont="/home/bcont.txt"
+edit -path="/home/b2ble.txt" -cont="/home/bcont.txt"
+#Reporte 10
+rep -id=531disco  -name=tree
+pause
+#CHGRP
+chgrp -user=user1 -grp=Compi_2
+rep -id=531disco  -Ruta="/users.txt" -name=file
+logout
+login -user=user1 -pass=user1 -id=531disco
+#Debe marcar error porque no es root
+chgrp -user=user1 -grp=Archivos
+logout
+pause
+
+#CHOWN
+login -pass=123 -user=root -id=531disco
+chown -path="/home/archivos/mia/fase2" -user=user -r
+rep -id=531disco  -Ruta="/home/archivos/mia/fase2" -name=ls
+pause
+
+chmod -path=/home -ugo=000 -r
+rep -id=531disco  -Ruta="/home" -name=ls
+pause
