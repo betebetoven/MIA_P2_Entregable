@@ -449,8 +449,10 @@ def p_expression(p):
                 | rep
                 
     '''
-
-    p[0] = ('binop', p[1])
+    #if p[1] type string then p[0] = p[1]
+    
+    p[0] = p[1]
+    
 
 ########################PARAMETROOOOOOOOOOOOOOOOOOOOOOOSSSSS
 def p_name(p):
@@ -930,10 +932,12 @@ def p_rep(p):
     rep : REP params
     '''
     #if users != None:
-    rep(p[2], mounted_partitions,mapa_de_bytes)
+    salida = rep(p[2], mounted_partitions,mapa_de_bytes)
     #else:
         #print("Error: You must be logged in to use this command")
+    
     p[0] = ('tree', p[2])
+    
 def p_error(p):
     print(f'Syntax error at {p.value!r}')
 
@@ -965,25 +969,7 @@ def display_table(mounted_partitions):
     # Print the table
     print(table)
 
-while True:
-    print(f'\n\ncurrent user: {users}')
-    
-    display_table(mounted_partitions)
-    
-    s = input('>> ')
-    if s == 'exit':
-        break
-    elif s.startswith('execute'):
-        nuevo = s.split('=')
-        print(nuevo)
-        contenido = ''
-        with open(nuevo[1], 'r') as file:
-            s = file.read()
-            contenido = s
-        result = parser.parse(contenido)
-    else:
-        result = parser.parse(s)
-        print(result)
+
 
 
 
@@ -1092,63 +1078,91 @@ def graph(file,inicio, index):
     return id
 
 
+"""while True:
+    print(f'\n\ncurrent user: {users}')
+    
+    display_table(mounted_partitions)
+    
+    s = input('>> ')
+    if s == 'exit':
+        break
+    elif s.startswith('execute'):
+        nuevo = s.split('=')
+        print(nuevo)
+        contenido = ''
+        with open(nuevo[1], 'r') as file:
+            s = file.read()
+            contenido = s
+        result = parser.parse(contenido)
+    else:
+        result = parser.parse(s)
+        print(result)"""
 
 
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import JSONResponse,FileResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import os
 
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
+
+@app.post("/api/query")
+async def api_query(request: Request):
+    try:
+        # Reading JSON Body of the request.
+        request_data = await request.json()
+        
+        # Extracting text from received JSON.
+        input_text = request_data.get('input', '')
+        # For demo purposes, just sending the received text back.
+        contenido = input_text
+        try:
+            result = parser.parse(contenido)
+        except Exception as e:
+            # If any error occurs, responding with the error message.
+            return JSONResponse(content={"error": str(e)})
+        response_data = {
+            "received_text": str(result)
+        }
+        
+        
+        return JSONResponse(content=response_data)
+    except Exception as e:
+        # If any error occurs, responding with the error message.
+        return JSONResponse(content={"error": str(e)})
+
+class File(BaseModel):
+    name: str
+    is_png: bool
+    path: str  # Path to access the file
+
+
+@app.get("/list-files", response_model=list[File])
+async def list_files():
+    directory = "reportes"  # Replace with the actual directory
+    files_list = []
+    
+    for filename in os.listdir(directory):
+        if filename.endswith(".png") or filename.endswith(".jpeg"):
+            is_png = filename.endswith(".png")
+            file_path = os.path.join(directory, filename)
+            files_list.append(File(name=filename, is_png=is_png, path=file_path))
+    
+    return files_list                
                 
-                
-    
-        
-        
-        
-        
-#with open(r'C:\Users\alber\OneDrive\Escritorio\cys\MIA\proyecto1\discos_test\home\mis discos\Disco4.dsk', "rb") as file:
-    #file.seek(0)
-    #data = file.read(MBR.SIZE)
-   # mbr = MBR.unpack(data[:MBR.SIZE])
-    #print("este es el mbr____")
-    #print(mbr)
-
-    #
-    #table = PrettyTable()
-    #table.field_names = ["Size", "Date", "Sig.", "Fit"]
-    #table.add_row([mbr.mbr_tamano, mbr.mbr_fecha_creacion, mbr.mbr_dsk_signature, mbr.fit])
-    
-   # table2 = PrettyTable()
-   # table2.field_names = ["size", "name", "unit", "type", "status","fit","inicio"]
-   # for n in mbr.particiones:
-    #    table2.add_row([n.actual_size, n.name, n.unit, n.type, n.status, n.fit, n.byte_inicio])
-        
-    
-    #print("👮🏼‍♂️_____________________MBR LEIDO__________________________________________________")
-    #print(table)
-    #print(table2)
-    #print("res")
-    #file.seek(mbr.particiones[0].byte_inicio)
-    #superblock = Superblock.unpack(file.read(Superblock.SIZE))
-    #codigo_para_graphviz= ''
-
-    #primero = graph(file,superblock.s_inode_start,0)
-    #print(f"home -> {primero}")
-    #codigo_para_graphviz += f"\nhome -> {primero}"
-    #with open('graphvizcode.txt', 'w') as f:
-        #f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
-    
-    
-    
-    
-
-#for n in ast:
-   # print(n[1])
-
-
-#codigo_para_graphviz = ''
-#for n in mapa_de_bytes:
-#    codigo_para_graphviz += f'\n{n[0]}\n{n[1]}'
-#for n in range(len(mapa_de_bytes)):
-#    codigo_para_graphviz += f'\ninodo_{n} -> inodo_{n+1}'
-#    codigo_para_graphviz += f'\nbloque_{n} -> bloque_{n+1}'
-    
-    
-#with open('historial_bitmaps.txt', 'w') as f:
-#        f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+@app.get("/get-image/{file_path:path}")
+async def get_image(file_path: str):
+    file_location = os.path.join(os.getcwd(), file_path)
+    if os.path.exists(file_location):
+        return FileResponse(file_location)
+    else:
+        raise HTTPException(status_code=404, detail="File not found")

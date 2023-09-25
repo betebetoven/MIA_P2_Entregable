@@ -8,6 +8,7 @@ __pycache__/
 *.pyproj
 *.vscode/
 *.idea/
+*.png
 
 historial_bitmaps_bloques.txt
 historial_bitmaps_inodos.txt

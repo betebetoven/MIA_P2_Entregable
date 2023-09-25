@@ -112,6 +112,7 @@ def prettytable_to_html_string_para_bloques(object_type, pt, lista,index, object
 #0 inode, 1 folderblock, 2 fileblock, 3 pointerblock
 codigo_para_graphviz = ''
 def graph(file,inicio, index):
+    salida = ""
     global codigo_para_graphviz
     if inicio == -1:
         return None
@@ -200,6 +201,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 #print(codigo_para_graphviz)
                 with open('graphvizcode.txt', 'w') as f:
                     f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
             except:
                 print("Error: The tree does not exist. because there was a loss")
                 return
@@ -216,6 +218,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 
             with open('historial_bitmaps.txt', 'w') as f:
                     f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
         elif name == 'bm_inode':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -226,6 +229,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 codigo_para_graphviz += f'\ninodo_{n} -> inodo_{n+1}'     
             with open('historial_bitmaps_inodos.txt', 'w') as f:
                     f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
         elif name == 'bm_bloc':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -236,6 +240,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 codigo_para_graphviz += f'\nbloque_{n} -> bloque_{n+1}' 
             with open('historial_bitmaps_bloques.txt', 'w') as f:
                     f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
         elif name == 'inode':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -262,6 +267,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 codigo_para_graphviz += f'\n{n} -> {n+1}'
             with open('inodos_graph.txt', 'w') as f:
                     f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
         elif name == 'block':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -295,6 +301,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 codigo_para_graphviz += f'\n{n} -> {n+1}'
             with open('bloques_graph.txt', 'w') as f:
                     f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
         elif name == 'journal':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -311,6 +318,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             codigo_para_graphviz = f'digraph G {{\n  uniconodo [shape=box, label="{formatted_journal_data}"];\n}}'
             with open('journal_graph.txt', 'w') as f:
                     f.write(f'{codigo_para_graphviz}')
+                    salida = f'{codigo_para_graphviz}'
         elif name == 'sb':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -323,6 +331,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             total,_= prettytable_to_html_string("sb", table, lista,inicio, inicio)
             with open('supeblock_graph.txt', 'w') as f:
                     f.write(f'digraph G {{\n{total}\n}}')
+                    salida = f'digraph G {{\n{total}\n}}'
                 
         elif name == 'mbr':
             file.seek(0)
@@ -334,6 +343,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 print(str(n))
             with open('mbr_graph.txt', 'w') as f:
                     f.write(f'digraph G {{\n{total}\n}}')
+                    salida = f'digraph G {{\n{total}\n}}'
         elif name == 'file':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -370,6 +380,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 print("#############################################")
                 with open('REPORTE_FILE.txt', 'w') as f:
                     f.write(f'{texto}')
+                    salida = f'{texto}'
         elif name == 'disk':
             rows = []
             file.seek(0)
@@ -409,6 +420,7 @@ disk [label=<
             
             with open('REPORTE_DISK.txt', 'w') as f:
                     f.write(f'{graphviz_code}')
+                    salida = f'{graphviz_code}'
                         
         elif name=='ebr':
             graphviz_code = ''
@@ -429,6 +441,7 @@ disk [label=<
                         next = ebr.next
             with open('EBR_graph.txt', 'w') as f:
                     f.write(f'digraph G {{\n{graphviz_code}\n}}')
+                    salida = f'digraph G {{\n{graphviz_code}\n}}'
         elif name =='ls':
             insidepath = params.get('ruta', '')
             file.seek(inicio)
@@ -482,3 +495,5 @@ disk [label=<
                     #print(graphviz_code)
                     with open('LS_graph.txt', 'w') as f:
                         f.write(f'{graphviz_code}')
+                        salida = f'{graphviz_code}'
+    return salida
