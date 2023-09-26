@@ -179,6 +179,30 @@ def generate_graphviz_image(graphviz_code: str, file_name: str):
     finally:
         # Clean up the temporary dot file
         os.remove("temp.dot")
+import os
+import subprocess
+
+def generate_graphviz_svg(graphviz_code: str, file_name: str):
+    # Define the path to the reportes folder
+    output_folder = "reportes"
+    os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
+    
+    # Define the full path to the output file
+    output_file_path = os.path.join(output_folder, f"{file_name}.svg")  # Changed to .svg
+    
+    # Create a temporary dot file to hold the Graphviz code
+    with open("temp.dot", "w") as file:
+        file.write(graphviz_code)
+    
+    try:
+        # Call dot to generate the SVG file from the dot file
+        subprocess.run(["dot", "-Tsvg", "temp.dot", "-o", output_file_path], check=True)  # Changed to -Tsvg
+    except subprocess.CalledProcessError as e:
+        print(f"Error generating Graphviz image: {e}")
+    finally:
+        # Clean up the temporary dot file
+        os.remove("temp.dot")
+
 
 def rep(params, mounted_partitions,mapa_de_bytes): 
     print(f'🚨  <<RUNNING REP {params}_ _ _ _ _ _ _ _ _ ')
@@ -187,7 +211,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
     #get params
     name = params.get('name', '')
     id = params.get('id', None)
-    
+    codigo_para_graphviz = ''
     if id == None:
         print("Error: The id is required.")
         return
@@ -224,9 +248,9 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 codigo_para_graphviz += f"\nhome -> {primero}"
                 #print(codigo_para_graphviz)
                 with open('graphvizcode.txt', 'w') as f:
-                    #f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
                     salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
-                    generate_graphviz_image(salida, "tree")
+                    generate_graphviz_svg(salida, "tree")
             except:
                 print("Error: The tree does not exist. because there was a loss")
                 return
@@ -242,9 +266,9 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 
                 
             with open('historial_bitmaps.txt', 'w') as f:
-                    #f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
                     salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
-                    generate_graphviz_image(salida, "bm")
+                    generate_graphviz_svg(salida, "bm")
         elif name == 'bm_inode':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -254,9 +278,9 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             for n in range(len(mapa_de_bytes)):
                 codigo_para_graphviz += f'\ninodo_{n} -> inodo_{n+1}'     
             with open('historial_bitmaps_inodos.txt', 'w') as f:
-                    #f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
                     salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
-                    generate_graphviz_image(salida, "bm_inode")
+                    generate_graphviz_svg(salida, "bm_inode")
         elif name == 'bm_bloc':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -266,10 +290,11 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             for n in range(len(mapa_de_bytes)):
                 codigo_para_graphviz += f'\nbloque_{n} -> bloque_{n+1}' 
             with open('historial_bitmaps_bloques.txt', 'w') as f:
-                    #f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
                     salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
-                    generate_graphviz_image(salida, "bm_bloc")
+                    generate_graphviz_svg(salida, "bm_bloc")
         elif name == 'inode':
+            codigo_para_graphviz = ''
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
             current_id = 0
@@ -294,10 +319,11 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             for n in range(current_id):
                 codigo_para_graphviz += f'\n{n} -> {n+1}'
             with open('inodos_graph.txt', 'w') as f:
-                    #f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
                     salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
-                    generate_graphviz_image(salida, "inode")
+                    generate_graphviz_svg(salida, "inode")
         elif name == 'block':
+            codigo_para_graphviz = ''
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
             current_id = 0
@@ -329,9 +355,9 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             for n in range(current_id):
                 codigo_para_graphviz += f'\n{n} -> {n+1}'
             with open('bloques_graph.txt', 'w') as f:
-                    #f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
+                    f.write(f'digraph G {{\n{codigo_para_graphviz}\n}}')
                     salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
-                    generate_graphviz_image(salida, "block")
+                    generate_graphviz_svg(salida, "block")
         elif name == 'journal':
             file.seek(inicio)
             superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -347,7 +373,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             formatted_journal_data = journal.journal_data.replace("\n", "\\n")
             codigo_para_graphviz = f'digraph G {{\n  uniconodo [shape=box, label="{formatted_journal_data}"];\n}}'
             with open('journal_graph.txt', 'w') as f:
-                    #f.write(f'{codigo_para_graphviz}')
+                    f.write(f'{codigo_para_graphviz}')
                     salida = f'{codigo_para_graphviz}'
                     generate_graphviz_image(salida, "journal")
         elif name == 'sb':
@@ -361,7 +387,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             print(table)
             total,_= prettytable_to_html_string("sb", table, lista,inicio, inicio)
             with open('supeblock_graph.txt', 'w') as f:
-                    #f.write(f'digraph G {{\n{total}\n}}')
+                    f.write(f'digraph G {{\n{total}\n}}')
                     salida = f'digraph G {{\n{total}\n}}'
                     generate_graphviz_image(salida, "sb")
                 
@@ -374,7 +400,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             for n in lista:
                 print(str(n))
             with open('mbr_graph.txt', 'w') as f:
-                    #f.write(f'digraph G {{\n{total}\n}}')
+                    f.write(f'digraph G {{\n{total}\n}}')
                     salida = f'digraph G {{\n{total}\n}}'
                     generate_graphviz_image(salida, "mbr")
         elif name == 'file':
@@ -412,7 +438,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                 print(texto)
                 print("#############################################")
                 with open('REPORTE_FILE.txt', 'w') as f:
-                    #f.write(f'{texto}')
+                    f.write(f'{texto}')
                     salida = f'{texto}'
                     generate_graphviz_image(salida, "file")
         elif name == 'disk':
@@ -453,7 +479,7 @@ disk [label=<
                             '''
             
             with open('REPORTE_DISK.txt', 'w') as f:
-                    #f.write(f'{graphviz_code}')
+                    f.write(f'{graphviz_code}')
                     salida = f'{graphviz_code}'
                     generate_graphviz_image(salida, "disk")
                         
@@ -475,7 +501,7 @@ disk [label=<
                         graphviz_code+="\n"+total
                         next = ebr.next
             with open('EBR_graph.txt', 'w') as f:
-                    #f.write(f'digraph G {{\n{graphviz_code}\n}}')
+                    f.write(f'digraph G {{\n{graphviz_code}\n}}')
                     salida = f'digraph G {{\n{graphviz_code}\n}}'
                     generate_graphviz_image(salida, "ebr")
         elif name =='ls':
@@ -530,7 +556,7 @@ disk [label=<
 }}'''            
                     #print(graphviz_code)
                     with open('LS_graph.txt', 'w') as f:
-                        #f.write(f'{graphviz_code}')
+                        f.write(f'{graphviz_code}')
                         salida = f'{graphviz_code}'
                         generate_graphviz_image(salida, "ls")
     return salida

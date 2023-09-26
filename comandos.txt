@@ -80,4 +80,6 @@ rep -id=531Disco4 -name=tree
 rep -id=531Disco4 -name=bm_bloc
 rep -id=531Disco4 -name=bm_inode
 rep -id=531Disco4 -name=bm
+rep -id=531Disco4 -name=inode
+rep -id=531Disco4 -name=bloc
 

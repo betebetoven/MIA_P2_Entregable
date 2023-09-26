@@ -9,7 +9,7 @@ __pycache__/
 *.vscode/
 *.idea/
 *.png
-
+*.svg
 historial_bitmaps_bloques.txt
 historial_bitmaps_inodos.txt
 historial_bitmaps.txt

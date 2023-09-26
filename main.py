@@ -70,6 +70,7 @@ def ver_bitmaps(instruccion, mounted_partitions, id):
 import math
 
 def generate_dot(instruccion, bitmap, label, contador):
+    bitmap = bitmap[:100]
     length = len(bitmap)
     rows = math.ceil(math.sqrt(length))
     
@@ -1143,6 +1144,7 @@ async def api_query(request: Request):
 class File(BaseModel):
     name: str
     is_png: bool
+    is_svg: bool
     path: str  # Path to access the file
 
 
@@ -1152,10 +1154,11 @@ async def list_files():
     files_list = []
     
     for filename in os.listdir(directory):
-        if filename.endswith(".png") or filename.endswith(".jpeg"):
-            is_png = filename.endswith(".png")
+        if filename.endswith(".png") or filename.endswith(".jpeg") or filename.endswith(".svg"):
+            is_png = filename.endswith(".png") 
+            is_svg = filename.endswith(".svg")
             file_path = os.path.join(directory, filename)
-            files_list.append(File(name=filename, is_png=is_png, path=file_path))
+            files_list.append(File(name=filename, is_png=is_png, is_svg=is_svg,path=file_path))
     
     return files_list                
                 
