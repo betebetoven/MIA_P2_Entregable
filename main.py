@@ -950,7 +950,7 @@ parser = yacc()
 
 # Parse an expression
 #ast = parser.parse(comandos)
-def display_table(mounted_partitions):
+def display_table(titulo,mounted_partitions):
     # Create a PrettyTable object
     table = PrettyTable()
     
@@ -971,7 +971,7 @@ def display_table(mounted_partitions):
             table.add_row(row)
     
     # Print the table
-    printt(table)
+    printt_status(titulo+"\n"+str(table))
 
 
 
@@ -1109,7 +1109,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 from connection_manager import ws_manager
+from connection_manager_status import ws_manager_status
 from send import send
+from send_status import send_status, printt_status
 
 app = FastAPI()
 
@@ -1140,8 +1142,9 @@ async def api_query(request: Request):
         response_data = {
             "received_text": str(result)
         }
-        printt(f'current user: {users}')
-        display_table(mounted_partitions)
+        
+        display_table(f'current user: {users}',mounted_partitions)
+        send_status()   
         send()
         
         return JSONResponse(content=response_data)
@@ -1192,3 +1195,15 @@ async def websocket_endpoint(websocket: WebSocket):
         ws_manager.disconnect(websocket)  # Remove the WebSocket from the manager.
 
 
+
+@app.websocket("/ws/status")
+async def websocket_status_endpoint(websocket: WebSocket):
+    await websocket.accept()  # Accept the WebSocket connection.
+    await ws_manager_status.connect(websocket)  # Add the WebSocket to the manager.
+    try:
+        while True:  # Keep the connection open and listen for messages.
+            await asyncio.sleep(0.5)
+            data = await websocket.receive_text()  # Receive a text message.
+            print(f"Received: {data}")  # Print the received message to the console.
+    except WebSocketDisconnect:  # Handle a disconnect.
+        ws_manager_status.disconnect(websocket)  # Remove the WebSocket from the manager.
