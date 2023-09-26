@@ -91,7 +91,7 @@ mounted_partitions = []
 users=None
 current_partition = None
 def recuperar(params, mounted_partitions, usuario_actual_boluo):
-    print(f'🚑 <<RUNNING RECOVERY {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'🚑 <<RUNNING RECOVERY {params} _ _ _ _ _ _ _ _ _ ')
     global users
     global current_partition
     id = params.get('id', None)
@@ -103,7 +103,7 @@ def recuperar(params, mounted_partitions, usuario_actual_boluo):
             break
 
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🚑Error: The partition with id {id} does not exist.")
         return
 
     # Retrieve partition details.
@@ -115,7 +115,7 @@ def recuperar(params, mounted_partitions, usuario_actual_boluo):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🚑Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         try: 
@@ -388,7 +388,7 @@ def t_MENOSR(t):
 
 # Ignored token with an action associated with it
 def t_ignore_newline(t):
-    r'\n+'
+    r'[\n\r]+'
     t.lexer.lineno += t.value.count('\n')
 
 # Error handler for illegal characters

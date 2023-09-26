@@ -11,6 +11,7 @@ import re
 from mkfile import busca
 from mkfs import parse_users
 from mountingusers import extract_active_groups, get_group_id
+from send import printt
 
 def add_to_journal(mounted_partitions,id, texto):  
     if id == None:
@@ -91,7 +92,7 @@ def ver_journal_actual(mounted_partitions,id):
             return
 #LOSS
 def loss(params, mounted_partitions, users):
-    print(f'⚰️ <<RUNNING LOSS {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'⚰️ <<RUNNING LOSS {params} _ _ _ _ _ _ _ _ _ ')
     id = params.get('id', None)
     # Check if the id exists in mounted_partitions.
     partition = None
@@ -101,7 +102,7 @@ def loss(params, mounted_partitions, users):
             break
 
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"⚰️Error: The partition with id {id} does not exist.")
         return
 
     # Retrieve partition details.
@@ -113,14 +114,14 @@ def loss(params, mounted_partitions, users):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"⚰️Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         try:
             file.seek(inicio+ Superblock.SIZE)
             minijournal = Journal.unpack(file.read(Journal.SIZE))
         except:
-            print("Error: The journal does not exist we are on a ext2")
+            printt("⚰️Error: The journal does not exist we are on a ext2")
             return
         file.seek(inicio)
         superblock = Superblock.unpack(file.read(Superblock.SIZE))
@@ -135,4 +136,4 @@ def loss(params, mounted_partitions, users):
         #get journal
         file.seek(inicio+superblock.SIZE)
         journal = Journal.unpack(file.read(Journal.SIZE))
-        print(f"journal_data: \n{journal.journal_data}")
+        printt(f"⚰️journal_data: \n{journal.journal_data}")

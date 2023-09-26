@@ -158,8 +158,10 @@ def graph(file,inicio, index):
     return id
 
 import subprocess
-
+nombre_archivo = ''
 def generate_graphviz_image(graphviz_code: str, file_name: str):
+    global nombre_archivo
+    file_name = file_name+nombre_archivo
     # Define the path to the reportes folder
     output_folder = "reportes"
     os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
@@ -183,6 +185,8 @@ import os
 import subprocess
 
 def generate_graphviz_svg(graphviz_code: str, file_name: str):
+    global nombre_archivo
+    file_name = file_name+nombre_archivo
     # Define the path to the reportes folder
     output_folder = "reportes"
     os.makedirs(output_folder, exist_ok=True)  # Create the folder if it doesn't exist
@@ -208,12 +212,17 @@ def rep(params, mounted_partitions,mapa_de_bytes):
     printt(f'🚨  <<RUNNING REP {params}_ _ _ _ _ _ _ _ _ ')
     global codigo_para_graphviz 
     global current_id
+    global nombre_archivo
     #get params
     name = params.get('name', '')
     id = params.get('id', None)
+    nombre_archivo_sin_split = params.get('path', '')
+    nombre_archivo = nombre_archivo_sin_split.split('/')[-1][:-4]
+    if nombre_archivo != '':
+        nombre_archivo="_"+nombre_archivo
     codigo_para_graphviz = ''
     if id == None:
-        print("Error: The id is required.")
+        printt("🚨Error: The id is required.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -221,7 +230,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🚨Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -231,7 +240,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🚨Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         
@@ -244,7 +253,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             codigo_para_graphviz= ''
             try:
                 primero = graph(file,superblock.s_inode_start,0)
-                print(f"home -> {primero}")
+                printt(f"🚨home -> {primero}")
                 codigo_para_graphviz += f"\nhome -> {primero}"
                 #print(codigo_para_graphviz)
                 with open('graphvizcode.txt', 'w') as f:
@@ -252,7 +261,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                     salida = f'digraph G {{\n{codigo_para_graphviz}\n}}'
                     generate_graphviz_svg(salida, "tree")
             except:
-                print("Error: The tree does not exist. because there was a loss")
+                printt("🚨Error: The tree does not exist. because there was a loss")
                 return
         elif name == 'bm':
             file.seek(inicio)
@@ -365,11 +374,11 @@ def rep(params, mounted_partitions,mapa_de_bytes):
             try: 
                 journal = Journal.unpack(file.read(Journal.SIZE))
             except:
-                print("Error: The journal does not exist.")
+                printt("🚨Error: The journal does not exist.")
                 return
             codigo_para_graphviz = ''
             codigo_para_graphviz += f'digraph G {{\n{journal.journal_data}\n}}'
-            print(f"journal_data: {journal.journal_data}")
+            printt(f"🚨journal_data: {journal.journal_data}")
             formatted_journal_data = journal.journal_data.replace("\n", "\\n")
             codigo_para_graphviz = f'digraph G {{\n  uniconodo [shape=box, label="{formatted_journal_data}"];\n}}'
             with open('journal_graph.txt', 'w') as f:
