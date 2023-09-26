@@ -1,0 +1,5 @@
+prettytable
+pip install graphviz
+pip install websockets
+pip install fastapi
+mkdisk -size=112 -unit=M -path=/home/parte2/disco.dsk

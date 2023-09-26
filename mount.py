@@ -4,13 +4,14 @@ import time
 import random
 from MBR import MBR
 from PARTICION import Partition
+from send import printt
 def mount(params, mounted_partitions):
-    print(f'👆<<RUNNING MOUNT {params}_ _ _ _ _ _ _ _ _ ')
+    printt(f'👆<<RUNNING MOUNT {params}_ _ _ _ _ _ _ _ _ ')
     filename = params.get('path')
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"👆Error: The file {full_path} does not exist.")
         return
     partitions = []
     with open(full_path, "rb+") as file:
@@ -28,7 +29,7 @@ def mount(params, mounted_partitions):
             bandera = True
             index = i
     if bandera == False:
-        print(f"Error: The partition {name} does not exist.")
+        printt(f"👆Error: The partition {name} does not exist.")
         return
     mycarne = 53
     diskname = filename.split('/')[-1]
@@ -43,17 +44,17 @@ def mount(params, mounted_partitions):
                                     'id': id,
                                     'inicio': partitions[index].byte_inicio,
                                     'size': partitions[index].actual_size,}})
-    print(f"Partition {name} was mounted successfully as {id}.")
+    printt(f"👆✅✅Partition {name} was mounted successfully as {id}.")
 #make unmount, it will receive params and you have to get id, and then delete the dictionary with that id from the list
 def unmount(params, mounted_partitions):
-    print(f'👇<<RUNNING UN-MOUNT {params}_ _ _ _ _ _ _ _ _ ')
+    printt(f'👇<<RUNNING UN-MOUNT {params}_ _ _ _ _ _ _ _ _ ')
     id_to_unmount = params.get('id')
     
     for index, partition_dict in enumerate(mounted_partitions):
         if id_to_unmount in partition_dict:
             mounted_partitions.pop(index)
-            print(f"Partition {id_to_unmount} was unmounted successfully.")
+            printt(f"👇✅✅Partition {id_to_unmount} was unmounted successfully.")
             return
         else:  # This gets executed if the loop wasn't broken by the break statement.
-            print(f"Error: The partition {id_to_unmount} does not exist.")
+            printt(f"👇Error: The partition {id_to_unmount} does not exist.")
 

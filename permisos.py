@@ -11,7 +11,7 @@ import re
 from mkfile import busca
 from mkfs import parse_users
 from mountingusers import extract_active_groups, get_group_id
-
+from send import printt
 def read_file_inode(file, lista):
     texto = ''
     for n in lista:
@@ -115,15 +115,15 @@ def count_bloques_for_a_text(text):
     return fileblocks
         
 def chown(params, mounted_partitions,id, usuario_actual):  
-    print(f'🤝<<RUNNING CHOWN {params}_ _ _ _ _ _ _ _ _ ')
+    printt(f'🤝<<RUNNING CHOWN {params}_ _ _ _ _ _ _ _ _ ')
     if id == None:
-        print("Error: The id is required.")
+        printt("🤝Error: The id is required.")
         return
     try: 
         insidepath = params['path']
         user = params['user']
     except:
-        print("Error:Path must be specified.")
+        printt("🤝Error:Path must be specified.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -131,7 +131,7 @@ def chown(params, mounted_partitions,id, usuario_actual):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🤝Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -141,7 +141,7 @@ def chown(params, mounted_partitions,id, usuario_actual):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🤝Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -154,49 +154,49 @@ def chown(params, mounted_partitions,id, usuario_actual):
             if esta:
                 PI = v
             else:
-                print(f'archivo {insidepath} no existe')
+                printt(f'🤝archivo {insidepath} no existe')
                 return
         file.seek(PI)
         
         inodo = Inode.unpack(file.read(Inode.SIZE))
         if str(inodo.i_uid) != str(usuario_actual['id']):
-            print(f'No tiene permisos para cambiar el propietario del archivo {insidepath}')
+            printt(f'🤝No tiene permisos para cambiar el propietario del archivo {insidepath}')
             return
         
         _,PI_users = busca(file,superblock.s_inode_start,0,'users.txt')
         file.seek(PI_users)
         inodo_archivo = Inode.unpack(file.read(Inode.SIZE))
         texto_usuarios = read_file_inode(file, inodo_archivo.i_block)
-        print(texto_usuarios)
+        printt(texto_usuarios)
         grupos = parse_users(texto_usuarios)
         usuario_obtenido = None
         for n in grupos:
             if user in n:
                 usuario_obtenido = n
                 break
-        print(usuario_obtenido)
+        printt(usuario_obtenido)
         
         if usuario_obtenido:
             inodo.i_uid = int(usuario_obtenido[user]['id'])
             inodo.I_gid = int(usuario_obtenido[user]['id'])
             file.seek(PI)
             file.write(inodo.pack())
-            print(f'El propietario del archivo {insidepath} ha sido cambiado a {user}')
+            printt(f'🤝✅✅El propietario del archivo {insidepath} ha sido cambiado a {user}')
             r = params.get('r', '/')
             if r == '-r':
                 cambiar_id_inodos_recursivamente(file,PI,0,inodo.i_uid)
             
 def chgrp(params, mounted_partitions,id, usuario_actual):  
-    print(f'👷<<- - - - - - -CHGRP {params}')
+    printt(f'👷<<- - - - - - -CHGRP {params}')
     if id == None:
-        print("Error: The id is required.")
+        printt("👷Error: The id is required.")
         return
     try: 
         user = params['user']
         group = params['grp']
         
     except:
-        print("Error:Path must be specified.")
+        printt("👷Error:Path must be specified.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -204,7 +204,7 @@ def chgrp(params, mounted_partitions,id, usuario_actual):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"👷Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -214,7 +214,7 @@ def chgrp(params, mounted_partitions,id, usuario_actual):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"👷Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -233,10 +233,10 @@ def chgrp(params, mounted_partitions,id, usuario_actual):
                 usuario_existe = True
                 break
         if not usuario_existe:
-            print(f'🚷🚷__El usuario {user} no existe')
+            printt(f'🚷🚷__El usuario {user} no existe')
             return
         if group_id == None:
-            print(f'🚷🚷__El grupo {group} no existe')
+            printt(f'🚷🚷__El grupo {group} no existe')
             return
         new_texto = change_group_user(texto_usuarios, group_id,group , user) + '\n'
         cantidad_bloques_utilizados = count_occupied_blocks_in_inode(inodo_archivo)
@@ -251,16 +251,16 @@ def chgrp(params, mounted_partitions,id, usuario_actual):
         primerbloque = inodo_archivo.i_block[0]
         indice_a_borrar = (primerbloque-superblock.s_block_start)//64
         if cantitda_bloques_por_utilizat<=12:
-            print(f'cantidad de bloques utilizados {cantidad_bloques_utilizados}')
-            print(f'cantidad de bloques por utilizar {cantitda_bloques_por_utilizat}')
-            #print(f'{new_texto} sigue')
+            printt(f'👷cantidad de bloques utilizados {cantidad_bloques_utilizados}')
+            printt(f'👷cantidad de bloques por utilizar {cantitda_bloques_por_utilizat}')
+            #printt(f'{new_texto} sigue')
             tupu = new_texto[-1]=="\n"
-            print(f'{tupu}')
-            input('__verificar chgrp_')
+            printt(f'👷{tupu}')
+            #input('__verificar chgrp_')
             bitmap = bitmap[:indice_a_borrar] + '0'*cantidad_bloques_utilizados + bitmap[indice_a_borrar+cantidad_bloques_utilizados:]
             index = bitmap.find('0'*cantitda_bloques_por_utilizat)
             a = bitmap[:index] + '1'*cantitda_bloques_por_utilizat + bitmap[index+cantitda_bloques_por_utilizat:]
-            #print(a)
+            #printt(a)
             texto = new_texto
             chunks = [texto[i:i+64] for i in range(0, len(texto), 64)]
             for i,n in enumerate(chunks):
@@ -273,19 +273,19 @@ def chgrp(params, mounted_partitions,id, usuario_actual):
             file.write(inodo_archivo.pack())
             file.seek(bitmap_bloques_inicio)
             file.write(struct.pack(FORMAT,a.encode('utf-8')))
-            print(f'✅✅__El grupo del usuario {user} ha sido cambiado a {group}')
+            printt(f'👷✅✅__El grupo del usuario {user} ha sido cambiado a {group}')
         
         
 def chmod(params, mounted_partitions,id, usuario_actual):  
-    print(f'🔨<<RUNNING CHMOD {params}_ _ _ _ _ _ _ _ _ ')
+    printt(f'🔨<<RUNNING CHMOD {params}_ _ _ _ _ _ _ _ _ ')
     if id == None:
-        print("Error: The id is required.")
+        printt("🔨Error: The id is required.")
         return
     try: 
         insidepath = params['path']
         ugo = params['ugo']
     except:
-        print("Error:Path must be specified.")
+        printt("🔨Error:Path must be specified.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -293,7 +293,7 @@ def chmod(params, mounted_partitions,id, usuario_actual):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🔨Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -303,7 +303,7 @@ def chmod(params, mounted_partitions,id, usuario_actual):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🔨Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -316,18 +316,18 @@ def chmod(params, mounted_partitions,id, usuario_actual):
             if esta:
                 PI = v
             else:
-                print(f'archivo {insidepath} no existe')
+                printt(f'🔨archivo {insidepath} no existe')
                 return
         permisos_existentes = ['664','777','000','111','222','333','444','555','666']
         if str(ugo) not in permisos_existentes:
-            print(f'🚷🚷__El permiso {ugo} no existe')
+            printt(f'🚷🚷__El permiso {ugo} no existe')
             return
         file.seek(PI)
         inodo = Inode.unpack(file.read(Inode.SIZE))
         inodo.i_perm = int(ugo)
         file.seek(PI)
         file.write(inodo.pack())
-        print(f'El propietario del archivo {insidepath} ha sido cambiado a {ugo}')
+        printt(f'🔨✅✅El propietario del archivo {insidepath} ha sido cambiado a {ugo}')
         r = params.get('r', '/')
         if r == '-r':
             cambiar_permiso_inodos_recursivamente(file,PI,0,inodo.i_perm)

@@ -3,9 +3,12 @@ import os
 import struct
 import time
 import random
+from send import printt
 from mountingusers import load_users_from_content, parse_users, get_user_if_authenticated, get_id_by_group, extract_active_groups,get_group_id
+from send import printt
 def mkfs(params, mounted_partitions, users):
-    print(f'⚙️<<RUNNING MKFS {params}_ _ _ _ _ _ _ _ _ ')
+    printt(f'⚙️<<RUNNING MKFS {params}_ _ _ _ _ _ _ _ _ ')
+    
     tipo = params.get('type', 'full').lower()
     id = params.get('id', None)
     fsext = params.get('fs', 'ext2')
@@ -21,7 +24,7 @@ def mkfs(params, mounted_partitions, users):
             break
 
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"⚙️Error: The partition with id {id} does not exist.")
         return
 
     # Retrieve partition details.
@@ -32,7 +35,7 @@ def mkfs(params, mounted_partitions, users):
 
     # Step 3: Format based on tipo.
     if tipo == 'full':
-        print(f'size de particion: {size}')
+        printt(f'⚙️size de particion: {size}')
         superblock = Superblock(inicio, int(size),ext)
         superblock.ver_bytes_inidices()
         superblock.s_free_inodes_count -= 1
@@ -41,7 +44,7 @@ def mkfs(params, mounted_partitions, users):
         current_directory = os.getcwd()
         full_path= f'{current_directory}/discos_test{filename}'
         if not os.path.exists(full_path):
-            print(f"Error: The file {full_path} does not exist.")
+            printt(f"⚙️Error: The file {full_path} does not exist.")
             return
         with open(full_path, "rb+") as file:
             
@@ -96,21 +99,21 @@ def mkfs(params, mounted_partitions, users):
             file.seek(superblock.s_block_start)
             file.write(b1.pack())
             file.write(b2.pack())
-            print(f"Partition {id} was formatted successfully.")
-            #print("     bitmap inodos")
-            #print(f'    {bitmapinodos}')
-            #print("     bitmap bloques")
-            #print(f'    {bitmapbloques}')
+            printt(f"⚙️✅✅Partition {id} was formatted successfully.")
+            #printt("     bitmap inodos")
+            #printt(f'    {bitmapinodos}')
+            #printt("     bitmap bloques")
+            #printt(f'    {bitmapbloques}')
             
 
         
 
 
-        #print(f"Partition {id} was formatted successfully.")
+        #printt(f"Partition {id} was formatted successfully.")
 from FORMATEO.ext2.ext2 import Superblock, Inode, FolderBlock, FileBlock, PointerBlock, block, Content
 import struct
 def login(params, mounted_partitions):
-    print(f'🧍<<RUNNING LOGIN {params}_ _ _ _ _ _ _ _ _ ')
+    printt(f'🧍<<RUNNING LOGIN {params}_ _ _ _ _ _ _ _ _ ')
 #user, password need to come in params, if not, return error
     try:
         user = params['user']
@@ -118,7 +121,7 @@ def login(params, mounted_partitions):
         id = params['id']
         
     except:
-        print("Error: The user and password are required.")
+        printt("🧍Error: The user and password are required.")
         return None, None
     partition = None
     for partition_dict in mounted_partitions:
@@ -127,7 +130,7 @@ def login(params, mounted_partitions):
             break
 
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🧍Error: The partition with id {id} does not exist.")
         return
 
     # Retrieve partition details.
@@ -138,13 +141,13 @@ def login(params, mounted_partitions):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🧍Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
         superblock = Superblock.unpack(file.read(Superblock.SIZE))
-        #print("ESTE ES EL SUPERBLOCK EN EL LOGIN__________________")
-        #print(superblock)
+        #printt("ESTE ES EL SUPERBLOCK EN EL LOGIN__________________")
+        #printt(superblock)
         file.seek(superblock.s_inode_start)
         inodo = Inode.unpack(file.read(Inode.SIZE))
         siguiente = inodo.i_block[0]
@@ -160,28 +163,28 @@ def login(params, mounted_partitions):
                 file.seek(siguiente)
                 fileblock = FileBlock.unpack(file.read(FileBlock.SIZE))
                 texto += fileblock.b_content.rstrip('\x00')
-        #print("ESTE ES EL TEXTO EN EL LOGIN__________________")
+        #printt("ESTE ES EL TEXTO EN EL LOGIN__________________")
         
         #texto+='2,G,usuarios\n2,U,usuarios,user1,usuario\n'
         #usuarios = load_users_from_content(texto)
         usuarios = parse_users(texto)
         users= get_user_if_authenticated(usuarios, user, password)
-        print("ESTE ES EL USUARIO EN EL LOGIN__________________")
-        print(users)
+        printt(f"🧍✅✅Usuario logeado -> {users}")
+        #printt(users)
         return users,id
         
 def makeuser(params, mounted_partitions,id):
-    print(f'🙋 <<RUNNING MAKE-USER {params} _ _ _ _ _ _ _ _ _ ')
-    #print(params)
+    printt(f'🙋 <<RUNNING MAKE-USER {params} _ _ _ _ _ _ _ _ _ ')
+    #printt(params)
     if id == None:
-        print("Error: The id is required.")
+        printt("🙋Error: The id is required.")
         return
     try: 
         user = params['user']
         password = params['pass']
         group = params['grp']
     except:
-        print("Error: The user, password and group are required.")
+        printt("🙋Error: The user, password and group are required.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -189,7 +192,7 @@ def makeuser(params, mounted_partitions,id):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🙋Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -199,7 +202,7 @@ def makeuser(params, mounted_partitions,id):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🙋Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -231,17 +234,17 @@ def makeuser(params, mounted_partitions,id):
         #user = user[:10]
         #password = password[:10]
         #group = group[:10]
-        #print("ESTE ES EL GRUPO QUE SE VA A CREAR")
-        #print("usuario a buscar___")
-        #print(user)
-        #print("grupos____")
-        #print(grupos)
+        #printt("ESTE ES EL GRUPO QUE SE VA A CREAR")
+        #printt("usuario a buscar___")
+        #printt(user)
+        #printt("grupos____")
+        #printt(grupos)
         group_exists = False  # Initially, we assume the group does not exist
         for n in grupos:
-            #print (n)
-            #print(user)
+            #printt (n)
+            #printt(user)
             if user in n:
-                print("Error: The user already exists.*********************************************************************")
+                printt("🙋Error: The user already exists.")
                 return
         #
         grupos22 = extract_active_groups(texto)
@@ -253,14 +256,14 @@ def makeuser(params, mounted_partitions,id):
                 break
 
         if group_exists2==False:
-            print(f"Error: The group {group} doesn't exists.")
+            printt(f"🙋Error: The group {group} doesn't exists.")
             return
         #
 
              
         
             
-        #print("ESTE ES EL USUARIO QUE SE VA A CREAR")
+        #printt("ESTE ES EL USUARIO QUE SE VA A CREAR")
         id = get_group_id(group,grupos22 )
         #texto+='2,G,usuarios\n2,U,usuarios,user1,usuario\n'
         texto += f'{id},U,{group},{user},{password}\n'
@@ -275,14 +278,14 @@ def makeuser(params, mounted_partitions,id):
         file.seek(bitmap_bloques_inicio)
         bitmap_bloques = struct.unpack(FORMAT, file.read(SIZE))
         bitmap=bitmap_bloques[0].decode('utf-8')
-        #print(bitmap)
+        #printt(bitmap)
                     
         if fileblocks<=12:
             bitmap = bitmap[:indice_a_borrar] + '0'*cont + bitmap[indice_a_borrar+cont:]
             index = bitmap.find('0'*fileblocks)
-            #print(bitmap)
+            #printt(bitmap)
             a = bitmap[:index] + '1'*fileblocks + bitmap[index+fileblocks:]
-            #print(a)
+            #printt(a)
             chunks = [texto[i:i+64] for i in range(0, len(texto), 64)]
             for i,n in enumerate(chunks):
                 new_fileblock = FileBlock()
@@ -296,6 +299,7 @@ def makeuser(params, mounted_partitions,id):
             #rewrite bitmap
             file.seek(bitmap_bloques_inicio)
             file.write(a.encode('utf-8'))
+            printt(f"🙋✅✅User {user} was created successfully.")
             return
                         
 
@@ -303,14 +307,14 @@ def makeuser(params, mounted_partitions,id):
                         
 #write a storu about                     
 def makegroup(params, mounted_partitions,id):
-    print(f'👩‍👨‍👧‍👧 <<RUNNING MAKE-GROUP {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'👩‍👨‍👧‍👧 <<RUNNING MAKE-GROUP {params} _ _ _ _ _ _ _ _ _ ')
     if id == None:
-        print("Error: The id is required.")
+        printt("👩‍👨‍👧‍👧Error: The id is required.")
         return
     try: 
         group = params['name']
     except:
-        print("Error: The user, password and group are required.")
+        printt("👩‍👨‍👧‍👧Error: The user, password and group are required.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -318,7 +322,7 @@ def makegroup(params, mounted_partitions,id):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"👩‍👨‍👧‍👧Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -328,7 +332,7 @@ def makegroup(params, mounted_partitions,id):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"👩‍👨‍👧‍👧Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -364,19 +368,19 @@ def makegroup(params, mounted_partitions,id):
                 break
 
         if group_exists==True:
-            print(f"Error: The group {group} already exist.")
+            printt(f"👩‍👨‍👧‍👧Error: The group {group} already exist.")
             return
 
-        #print("ESTE ES EL GRUPO QUE SE VA A CREAR")
-        #print(group)
-        #print(grupos)
+        #printt("ESTE ES EL GRUPO QUE SE VA A CREAR")
+        #printt(group)
+        #printt(grupos)
         max_id = max(g['id'] for g in grupos)
         
         # The next available ID will be max_id + 1
         next_id = max_id + 1
-        #print(next_id)
+        #printt(next_id)
         texto += f'{next_id},G,{group}\n'
-        #print(texto)
+        #printt(texto)
         length = len(texto)
         fileblocks = length//64
         if length%64 != 0:
@@ -388,14 +392,14 @@ def makegroup(params, mounted_partitions,id):
         file.seek(bitmap_bloques_inicio)
         bitmap_bloques = struct.unpack(FORMAT, file.read(SIZE))
         bitmap=bitmap_bloques[0].decode('utf-8')
-        #print(bitmap)
+        #printt(bitmap)
                     
         if fileblocks<=12:
             bitmap = bitmap[:indice_a_borrar] + '0'*cont + bitmap[indice_a_borrar+cont:]
             index = bitmap.find('0'*fileblocks)
-            #print(bitmap)
+            #printt(bitmap)
             a = bitmap[:index] + '1'*fileblocks + bitmap[index+fileblocks:]
-            #print(a)
+            #printt(a)
             chunks = [texto[i:i+64] for i in range(0, len(texto), 64)]
             for i,n in enumerate(chunks):
                 new_fileblock = FileBlock()
@@ -409,20 +413,20 @@ def makegroup(params, mounted_partitions,id):
             #rewrite bitmap
             file.seek(bitmap_bloques_inicio)
             file.write(a.encode('utf-8'))
-            print(f"Group {group} was created successfully.")
+            printt(f"👩‍👨‍👧‍👧✅✅Group {group} was created successfully.")
             return
         
         
         
 def remgroup(params, mounted_partitions,id):
-    print(f'🙅‍♂️ <<RUNNING REMOVE-GROUP {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'🙅‍♂️ <<RUNNING REMOVE-GROUP {params} _ _ _ _ _ _ _ _ _ ')
     if id == None:
-        print("Error: The id is required.")
+        printt("Error: The id is required.")
         return
     try: 
         group = params['name']
     except:
-        print("Error: The user, password and group are required.")
+        printt("🙅‍♂️Error: The user, password and group are required.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -430,7 +434,7 @@ def remgroup(params, mounted_partitions,id):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🙅‍♂️Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -440,7 +444,7 @@ def remgroup(params, mounted_partitions,id):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🙅‍♂️Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -476,7 +480,7 @@ def remgroup(params, mounted_partitions,id):
                 break
 
         if group_exists==False:
-            print(f"Error: The group {group} doesn´t exists.")
+            printt(f"🙅‍♂️Error: The group {group} doesn´t exists.")
             return
         arreglo = texto.split('\n')
         lineas = []
@@ -487,11 +491,11 @@ def remgroup(params, mounted_partitions,id):
             if linea[1] == 'G' and linea[2] == group:
                 linea[0] = '0'
             lineas.append(','.join(linea))
-            print(lineas)
+            #printt(lineas)
         texto = '\n'.join(lineas)
         texto+='\n'
-        print(texto)
-        #print(texto.split('\n'))
+        #printt(texto)
+        #printt(texto.split('\n'))
         length = len(texto)
         fileblocks = length//64
         if length%64 != 0:
@@ -503,14 +507,14 @@ def remgroup(params, mounted_partitions,id):
         file.seek(bitmap_bloques_inicio)
         bitmap_bloques = struct.unpack(FORMAT, file.read(SIZE))
         bitmap=bitmap_bloques[0].decode('utf-8')
-        #print(bitmap)
+        #printt(bitmap)
                     
         if fileblocks<=12:
             bitmap = bitmap[:indice_a_borrar] + '0'*cont + bitmap[indice_a_borrar+cont:]
             index = bitmap.find('0'*fileblocks)
-            #print(bitmap)
+            #printt(bitmap)
             a = bitmap[:index] + '1'*fileblocks + bitmap[index+fileblocks:]
-            #print(a)
+            #printt(a)
             chunks = [texto[i:i+64] for i in range(0, len(texto), 64)]
             for i,n in enumerate(chunks):
                 new_fileblock = FileBlock()
@@ -524,18 +528,19 @@ def remgroup(params, mounted_partitions,id):
             #rewrite bitmap
             file.seek(bitmap_bloques_inicio)
             file.write(a.encode('utf-8'))
+            printt(f"🙅‍♂️✅✅Group {group} was removed successfully.")
             return
 
 def remuser(params, mounted_partitions,id):   
-    print(f'🙅‍♂️ <<RUNNING REMOVE-USER {params} _ _ _ _ _ _ _ _ _ ')
-    #print(params)
+    printt(f'🙅‍♂️ <<RUNNING REMOVE-USER {params} _ _ _ _ _ _ _ _ _ ')
+    #printt(params)
     if id == None:
-        print("Error: The id is required.")
+        printt("🙅‍♂️Error: The id is required.")
         return
     try: 
         user = params['user']
     except:
-        print("Error: The user is required required.")
+        printt("🙅‍♂️Error: The user is required required.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -543,7 +548,7 @@ def remuser(params, mounted_partitions,id):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🙅‍♂️Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -553,7 +558,7 @@ def remuser(params, mounted_partitions,id):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🙅‍♂️Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -589,7 +594,7 @@ def remuser(params, mounted_partitions,id):
                 bandera = True
                 break
         if bandera == False:
-            print(f"Error: The user doesn´t exists.")
+            printt(f"🙅‍♂️Error: The user doesn´t exists.")
             return
         arreglo = texto.split('\n')
         lineas = []
@@ -600,11 +605,11 @@ def remuser(params, mounted_partitions,id):
             if linea[1] == 'U' and linea[3] == user:
                 linea[0] = '0'
             lineas.append(','.join(linea))
-            #print(lineas)
+            #printt(lineas)
         texto = '\n'.join(lineas)
         texto+='\n'
-        #print(texto)
-        #print(texto.split('\n'))
+        #printt(texto)
+        #printt(texto.split('\n'))
         length = len(texto)
         fileblocks = length//64
         if length%64 != 0:
@@ -616,14 +621,14 @@ def remuser(params, mounted_partitions,id):
         file.seek(bitmap_bloques_inicio)
         bitmap_bloques = struct.unpack(FORMAT, file.read(SIZE))
         bitmap=bitmap_bloques[0].decode('utf-8')
-        #print(bitmap)
+        #printt(bitmap)
                     
         if fileblocks<=12:
             bitmap = bitmap[:indice_a_borrar] + '0'*cont + bitmap[indice_a_borrar+cont:]
             index = bitmap.find('0'*fileblocks)
-            #print(bitmap)
+            #printt(bitmap)
             a = bitmap[:index] + '1'*fileblocks + bitmap[index+fileblocks:]
-            #print(a)
+            #printt(a)
             chunks = [texto[i:i+64] for i in range(0, len(texto), 64)]
             for i,n in enumerate(chunks):
                 new_fileblock = FileBlock()
@@ -637,6 +642,6 @@ def remuser(params, mounted_partitions,id):
             #rewrite bitmap
             file.seek(bitmap_bloques_inicio)
             file.write(a.encode('utf-8'))
-            #print(a)
-            print(f"User {user} was removed successfully.")
+            #printt(a)
+            printt(f"🙅‍♂️✅✅User {user} was removed successfully.")
             return

@@ -203,9 +203,9 @@ def generate_graphviz_svg(graphviz_code: str, file_name: str):
         # Clean up the temporary dot file
         os.remove("temp.dot")
 
-
+from send import printt
 def rep(params, mounted_partitions,mapa_de_bytes): 
-    print(f'🚨  <<RUNNING REP {params}_ _ _ _ _ _ _ _ _ ')
+    printt(f'🚨  <<RUNNING REP {params}_ _ _ _ _ _ _ _ _ ')
     global codigo_para_graphviz 
     global current_id
     #get params
@@ -435,7 +435,7 @@ def rep(params, mounted_partitions,mapa_de_bytes):
                     file.seek(n)
                     bloque = FileBlock.unpack(file.read(FileBlock.SIZE))
                     texto +=bloque.b_content.strip('\x00')
-                print(texto)
+                printt("🚨  \n"+texto)
                 print("#############################################")
                 with open('REPORTE_FILE.txt', 'w') as f:
                     f.write(f'{texto}')
@@ -532,18 +532,18 @@ disk [label=<
                         continue
                     file.seek(m.b_inodo)
                     inodito = Inode.unpack(file.read(Inode.SIZE))
-                    print(""+str(i))
-                    print(m.b_inodo)
-                    print(m.b_name.rstrip('\x00'))
-                    print(inodito.i_uid)
-                    print(inodito.I_gid)
-                    print(inodito.i_s)
-                    print(inodito.i_perm)
-                    print(tipo[inodito.i_type])
-                    print(inodito.i_atime)
+                    #print(""+str(i))
+                    #print(m.b_inodo)
+                    #print(m.b_name.rstrip('\x00'))
+                    #print(inodito.i_uid)
+                    #print(inodito.I_gid)
+                    #print(inodito.i_s)
+                    #print(inodito.i_perm)
+                    #print(tipo[inodito.i_type])
+                    #print(inodito.i_atime)
                     texto = "\n<TR><TD>"+str(i)+"</TD><TD>"+str(m.b_inodo)+"</TD><TD>"+m.b_name.rstrip('\x00') +"</TD><TD>"+str(inodito.i_uid)+"</TD><TD>"+str(inodito.I_gid)+"</TD><TD>"+str(inodito.i_s)+"</TD><TD>"+str(inodito.i_perm)+"</TD><TD>"+tipo[inodito.i_type]+"</TD><TD>"+str(inodito.i_atime)+"</TD></TR>"
                     rows.append(texto)
-                    print("")
+                    #print("")
                     graphviz_code = f'''digraph G {{
 node [shape=none];
 disk [label=<
@@ -558,5 +558,5 @@ disk [label=<
                     with open('LS_graph.txt', 'w') as f:
                         f.write(f'{graphviz_code}')
                         salida = f'{graphviz_code}'
-                        generate_graphviz_image(salida, "ls")
+                        generate_graphviz_svg(salida, "ls")
     return salida

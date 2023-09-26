@@ -14,6 +14,7 @@ import struct
 import os
 from MBR import MBR
 from prettytable import PrettyTable
+from send import printt
 mapa_de_bytes = []
 contador_historial_mapa_de_bytes= 0
 def ver_bitmaps(instruccion, mounted_partitions, id):
@@ -121,7 +122,7 @@ def recuperar(params, mounted_partitions, usuario_actual_boluo):
             file.seek(inicio+Superblock.SIZE)
             journal = Journal.unpack(file.read(Journal.SIZE))
         except:
-            print("Error: The journal does not exist we are on a ext2")
+            printt("🚷🚷: The journal does not exist we are on a ext2")
             return
         content = journal.journal_data
         commands = [ast.literal_eval(line) for line in content.split("\n") if line.strip()]
@@ -136,71 +137,71 @@ def recuperar(params, mounted_partitions, usuario_actual_boluo):
                     makeuser(n[1], mounted_partitions, current_partition)
                     
                 else:
-                    print("Error: You must be logged in as root to use this command")
+                    printt("🚷🚷: You must be logged in as root to use this command")
             elif n[0]=='mkgrp':
                 if users != None and users['username']=='root' :
                     makegroup(n[1], mounted_partitions, current_partition)
             
                 else:
-                    print("Error: You must be logged in as root to use this command")
+                    printt("🚷🚷: You must be logged in as root to use this command")
             elif n[0]=='rmusr':
                 if users != None and users['username']=='root' :
                     remuser(n[1], mounted_partitions, current_partition)
                 else:
-                    print("Error: You must be logged in as root to use this command")
+                    printt("🚷🚷: You must be logged in as root to use this command")
             elif n[0]=='rmgrp':
                 if users != None and users['username']=='root' :
                     remgroup(n[1], mounted_partitions, current_partition)
                 else:
-                    print("Error: You must be logged in as root to use this command")
+                    printt("🚷🚷: You must be logged in as root to use this command")
             elif n[0]=='mkfile':
                 if users != None:
                     mkfile(n[1], mounted_partitions, current_partition, users)
                 else:
-                    print("Error: You must be logged in as root to use this command")
+                    printt("🚷🚷: You must be logged in as root to use this command")
             elif n[0]=='remove':
                 if users != None:
                     remove(n[1], mounted_partitions, current_partition, users)
                 else:
-                    print("Error: You must be logged in to use this command")
+                    printt("🚷🚷: You must be logged in to use this command")
             elif n[0]=='rename':
                 if users != None:
                     rename(n[1], mounted_partitions, current_partition, users)
                 else:
-                    print("Error: You must be logged in to use this command")
+                    printt("🚷🚷: You must be logged in to use this command")
             elif n[0]=='edit':
                 if users != None:
                     remove(n[1], mounted_partitions, current_partition, users)
                     mkfile(n[1], mounted_partitions, current_partition, users)
                 else:
-                    print("Error: You must be logged in to use this command")
+                    printt("🚷🚷: You must be logged in to use this command")
             elif n[0]=='copy':
                 if users != None:
                     copy(n[1], mounted_partitions, current_partition, users)
                 else:
-                    print("Error: You must be logged in to use this command")
+                    printt("🚷🚷: You must be logged in to use this command")
             elif n[0]=='move':
                 if users != None:
                     move(n[1], mounted_partitions, current_partition, users)
                     
                 else:
-                    print("Error: You must be logged in to use this command")
+                    printt("🚷🚷: You must be logged in to use this command")
             elif n[0]=='chown':
                 if users != None:
                     chown(n[1], mounted_partitions, current_partition, users)
                 else:
-                    print("Error: You must be logged in to use this command")
+                    printt("🚷🚷: You must be logged in to use this command")
             elif n[0]=='chgrp':
                 if users != None and users['username']=='root' :
                     chgrp(n[1], mounted_partitions, current_partition, users)
                     
                 else:
-                    print("Error: You must be logged in as root to use this command")
+                    printt("🚷🚷: You must be logged in as root to use this command")
             elif n[0]=='chmod':
                 if users != None and users['username']=='root' :
                     chmod(n[1], mounted_partitions, current_partition, users)
                 else:
-                    print("Error: You must be logged in to use this command")
+                    printt("🚷🚷: You must be logged in to use this command")
         ver_bitmaps("recuperar"+str(params), mounted_partitions, id)       
                 
                 
@@ -451,7 +452,7 @@ def p_expression(p):
                 
     '''
     #if p[1] type string then p[0] = p[1]
-    
+    #printt("            "+str(p[1]))
     p[0] = p[1]
     
 
@@ -740,12 +741,13 @@ def p_logout(p):
     '''
     global users
     exited_user = {}
+    printt(f'🚶<<RUNNING LOGOUT')
     if users is not None:
-        print(f'🚶<<RUNNING LOGOUT _ _ _ _ _ _ _ _ _ ')
+        printt(f'🚶✅✅')
         exited_user = users
         users = None
     else:
-        print("No user is logged in")
+        printt("🚶No user is logged in")
     add_to_journal(mounted_partitions,current_partition, str(('logout', {})))
     p[0] = ('logout', (exited_user))
 def p_mkusr(p):
@@ -757,7 +759,7 @@ def p_mkusr(p):
         ver_bitmaps('mkusr'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('mkusr', p[2])))
     else:
-        print("Error: You must be logged in as root to use this command")
+        printt("🚷🚷Error: You must be logged in as root to use this command")
     
     p[0] = ('mkusr', p[2])
 def p_mkgrp(p):
@@ -769,7 +771,7 @@ def p_mkgrp(p):
         ver_bitmaps('mkgrp'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('mkgrp', p[2])))
     else:
-        print("Error: You must be logged in as root to use this command")
+         printt("🚷🚷Error: You must be logged in as root to use this command")
     p[0] = ('mkgrp', p[2])
 def p_rmgrp(p):
     '''
@@ -780,7 +782,7 @@ def p_rmgrp(p):
         ver_bitmaps('rmgrp'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('rmgrp', p[2])))
     else:
-        print("Error: You must be logged in as root to use this command")
+        printt("🚷🚷: You must be logged in as root to use this command")
     p[0] = ('rmgrp', p[2])
 def p_rmusr(p):
     '''
@@ -791,18 +793,19 @@ def p_rmusr(p):
         ver_bitmaps('rmusr'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('rmusr', p[2])))
     else:
-        print("Error: You must be logged in as root to use this command")
+        printt("🚷🚷: You must be logged in as root to use this command")
     p[0] = ('rmusr', p[2])
 def p_mkfile(p):
     '''
     mkfile : MKFILE params
     '''
     if users != None:
+        printt('📜  mkfile'+str(p[2]))
         mkfile(p[2], mounted_partitions, current_partition, users)
         ver_bitmaps('mkfile'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('mkfile', p[2])))
     else:
-        print("Error: You must be logged in as root to use this command")
+        printt("🚷🚷: You must be logged in as root to use this command")
     p[0] = ('mkfile', p[2])
 def p_cat(p):
     '''
@@ -811,7 +814,7 @@ def p_cat(p):
     if users != None:
         cat(p[2], mounted_partitions, current_partition, users)
     else:
-        print("Error: You must be logged in to use this command")
+        printt("🚷🚷: You must be logged in to use this command")
     p[0] = ('cat', p[2])
 def p_remove(p):
     '''
@@ -822,7 +825,7 @@ def p_remove(p):
         ver_bitmaps('remove'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('remove', p[2])))
     else:
-        print("Error: You must be logged in to use this command")
+        printt("🚷🚷: You must be logged in to use this command")
     p[0] = ('remove', p[2])
 def p_rename(p):
     '''
@@ -833,7 +836,7 @@ def p_rename(p):
         ver_bitmaps('rename'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('rename', p[2])))
     else:
-        print("Error: You must be logged in to use this command")
+        printt("🚷🚷: You must be logged in to use this command")
     p[0] = ('rename', p[2])
 def p_edit(p):
     '''
@@ -845,7 +848,7 @@ def p_edit(p):
         ver_bitmaps('edit'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('edit', p[2])))
     else:
-        print("Error: You must be logged in to use this command")
+        printt("🚷🚷: You must be logged in to use this command")
     p[0] = ('edit', p[2])
 def p_copy(p):
     '''
@@ -856,7 +859,7 @@ def p_copy(p):
         ver_bitmaps('copy'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('copy', p[2])))
     else:
-        print("Error: You must be logged in to use this command")
+        printt("🚷🚷: You must be logged in to use this command")
     p[0] = ('copy', p[2])
 def p_move(p):
     '''
@@ -867,7 +870,7 @@ def p_move(p):
         ver_bitmaps('move'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('move', p[2])))
     else:
-        print("Error: You must be logged in to use this command")
+        printt("🚷🚷: You must be logged in to use this command")
     p[0] = ('move', p[2])
 def p_find(p):
     '''
@@ -876,7 +879,7 @@ def p_find(p):
     if users != None:
         find(p[2], mounted_partitions, current_partition, users)
     else:
-        print("Error: You must be logged in to use this command")
+        printt("🚷🚷: You must be logged in to use this command")
     p[0] = ('find', p[2])
 def p_pause(p):
     '''
@@ -893,7 +896,7 @@ def p_chown(p):
         chown(p[2], mounted_partitions, current_partition, users)
         add_to_journal(mounted_partitions,current_partition, str(('chown', p[2])))
     else:
-        print("Error: You must be logged in to use this command")
+        printt("🚷🚷: You must be logged in to use this command")
     p[0] = ('chown', p[2])
 def p_chgrp(p):
     '''
@@ -904,7 +907,7 @@ def p_chgrp(p):
         ver_bitmaps('chgrp'+str(p[2]),mounted_partitions, current_partition)
         add_to_journal(mounted_partitions,current_partition, str(('chgrp', p[2])))
     else:
-        print("Error: You must be logged in as root to use this command")
+        printt("🚷🚷: You must be logged in as root to use this command")
     p[0] = ('chgrp', p[2])
 def p_chmod(p):
     '''
@@ -914,7 +917,7 @@ def p_chmod(p):
         chmod(p[2], mounted_partitions, current_partition, users)
         add_to_journal(mounted_partitions,current_partition, str(('chmod', p[2])))
     else:
-        print("Error: You must be logged in to use this command")
+        printt("🚷🚷: You must be logged in to use this command")
     p[0] = ('chmod', p[2])
 def p_loss(p):
     '''
@@ -935,7 +938,7 @@ def p_rep(p):
     #if users != None:
     salida = rep(p[2], mounted_partitions,mapa_de_bytes)
     #else:
-        #print("Error: You must be logged in to use this command")
+        #printt("🚷🚷: You must be logged in to use this command")
     
     p[0] = ('tree', p[2])
     
@@ -968,7 +971,7 @@ def display_table(mounted_partitions):
             table.add_row(row)
     
     # Print the table
-    print(table)
+    printt(table)
 
 
 
@@ -1080,7 +1083,7 @@ def graph(file,inicio, index):
 
 
 """while True:
-    print(f'\n\ncurrent user: {users}')
+    print(f'current user: {users}')
     
     display_table(mounted_partitions)
     
@@ -1100,11 +1103,13 @@ def graph(file,inicio, index):
         print(result)"""
 
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse,FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
+from connection_manager import ws_manager
+from send import send
 
 app = FastAPI()
 
@@ -1123,6 +1128,7 @@ async def api_query(request: Request):
         request_data = await request.json()
         
         # Extracting text from received JSON.
+        #await ws_manager.send_log_message(f"Received query: entro")
         input_text = request_data.get('input', '')
         # For demo purposes, just sending the received text back.
         contenido = input_text
@@ -1134,7 +1140,9 @@ async def api_query(request: Request):
         response_data = {
             "received_text": str(result)
         }
-        
+        printt(f'current user: {users}')
+        display_table(mounted_partitions)
+        send()
         
         return JSONResponse(content=response_data)
     except Exception as e:
@@ -1152,6 +1160,7 @@ class File(BaseModel):
 async def list_files():
     directory = "reportes"  # Replace with the actual directory
     files_list = []
+    await ws_manager.send_log_message(f"Connected to websocket")
     
     for filename in os.listdir(directory):
         if filename.endswith(".png") or filename.endswith(".jpeg") or filename.endswith(".svg"):
@@ -1169,3 +1178,17 @@ async def get_image(file_path: str):
         return FileResponse(file_location)
     else:
         raise HTTPException(status_code=404, detail="File not found")
+import asyncio
+@app.websocket("/ws/logs")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()  # Accept the WebSocket connection.
+    await ws_manager.connect(websocket)  # Add the WebSocket to the manager.
+    try:
+        while True:  # Keep the connection open and listen for messages.
+            await asyncio.sleep(0.5)
+            data = await websocket.receive_text()  # Receive a text message.
+            print(f"Received: {data}")  # Print the received message to the console.
+    except WebSocketDisconnect:  # Handle a disconnect.
+        ws_manager.disconnect(websocket)  # Remove the WebSocket from the manager.
+
+

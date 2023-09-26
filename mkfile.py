@@ -105,6 +105,7 @@ def busca_renombrabloque(file,byte,tipo,x,y):
                 #folder.b_content[i].b_inodo = -1
                 file.seek(byte)
                 file.write(folder.pack())
+                printt(f'🏳️✅✅archivo {x} renombrado a {y}')
                 break
         return esta,v
     
@@ -650,11 +651,11 @@ def mkfile(params, mounted_partitions,id, usuario_actual):
                 #implementar agragar folder o file(da lo mismo reutiliza codigo) si nos encontramos en un slot libre de un inodo
                 #resolver pq no funciona la recursividad para compmlentar toda la direccion necesarai ingresada
                 
-                
+from send import printt                
 def cat(params, mounted_partitions,id, usuario_actual):  
-    print(f'🐈 <<RUNNING CAT {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'🐈 <<RUNNING CAT {params} _ _ _ _ _ _ _ _ _ ')
     if id == None:
-        print("Error: The id is required.")
+        printt("🐈Error: The id is required.")
         return
     insidepaths = []  
     insidepath1 = params.get('file1', '')
@@ -677,7 +678,7 @@ def cat(params, mounted_partitions,id, usuario_actual):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🐈Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -687,13 +688,13 @@ def cat(params, mounted_partitions,id, usuario_actual):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🐈Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
         superblock = Superblock.unpack(file.read(Superblock.SIZE))
         for insidepath in insidepaths:
-            print(f'\n\nCAT DE {insidepath} ')
+            printt(f'\n\n🐈CAT DE {insidepath} ')
             lista_direcciones = insidepath.split('/')[1:]
             ##########################################################
             PI = superblock.s_inode_start
@@ -703,18 +704,18 @@ def cat(params, mounted_partitions,id, usuario_actual):
                 if esta:
                     PI = v
                 else:
-                    print(f'archivo {insidepath} no existe')
+                    printt(f'🐈archivo {insidepath} no existe')
                     newI = i
                     return
             if newI == -1:
-                print("#############################################")
-                print(f'archivo {insidepath} ya existe')
-                print(f'byte del inodo {PI}')
+                print("🐈#############################################")
+                print(f'🐈archivo {insidepath} ya existe')
+                printt(f'🐈byte del inodo {PI}')
                 file.seek(PI)
                 inodo = Inode.unpack(file.read(Inode.SIZE))
-                print(inodo)
-                #print(inodo.i_block)
-                print("#############################################")
+                printt(str(inodo))
+                #printt(inodo.i_block)
+                print("🐈#############################################")
                 texto = ''
                 for n in inodo.i_block:
                     if n == -1:
@@ -722,21 +723,21 @@ def cat(params, mounted_partitions,id, usuario_actual):
                     file.seek(n)
                     bloque = FileBlock.unpack(file.read(FileBlock.SIZE))
                     texto +=bloque.b_content.strip('\x00')
-                print(texto)
-                print("#############################################")
+                printt(texto)
+                printt("🐈✅✅")
                 
                 
             ##########################################################
     
 def remove(params, mounted_partitions,id, usuario_actual):  
-    print(f'💀 <<RUNNING REMOVE {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'💀 <<RUNNING REMOVE {params} _ _ _ _ _ _ _ _ _ ')
     if id == None:
-        print("Error: The id is required.")
+        printt("💀Error: The id is required.")
         return
     try: 
         insidepath = params['path']
     except:
-        print("Error:Path must be specified.")
+        printt("💀Error:Path must be specified.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -744,7 +745,7 @@ def remove(params, mounted_partitions,id, usuario_actual):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"💀Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -754,7 +755,7 @@ def remove(params, mounted_partitions,id, usuario_actual):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"💀Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -770,13 +771,13 @@ def remove(params, mounted_partitions,id, usuario_actual):
             if esta:
                 PI = v
             else:
-                print(f'archivo {insidepath} no existe')
+                printt(f'💀archivo {insidepath} no existe')
                 return
         inodos = []
         bloques = []
         recupera_todos_los_bytes(file,PI,0,inodos,bloques)
-        #print(inodos)
-        #print(bloques)
+        #printt(inodos)
+        #printt(bloques)
         index_inodos = []
         for n in inodos:
             index_inodos.append(byte_to_index(n,superblock.s_inode_start,Inode.SIZE))
@@ -796,20 +797,20 @@ def remove(params, mounted_partitions,id, usuario_actual):
         #print("bloques")
         #print(bitmap_bloques)
         #print("")
-        print(f'archivo {insidepath} eliminado')
+        printt(f'💀✅✅archivo {insidepath} eliminado')
         
     
         
 def rename(params, mounted_partitions,id, usuario_actual):  
-    print(f'🏳️ <<RUNNING RENAME {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'🏳️ <<RUNNING RENAME {params} _ _ _ _ _ _ _ _ _ ')
     if id == None:
-        print("Error: The id is required.")
+        printt("🏳️Error: The id is required.")
         return
     try: 
         insidepath = params['path']
         name = params['name']
     except:
-        print("Error:Path must be specified.")
+        printt("🏳️Error:Path must be specified.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -817,7 +818,7 @@ def rename(params, mounted_partitions,id, usuario_actual):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🏳️Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -827,7 +828,7 @@ def rename(params, mounted_partitions,id, usuario_actual):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🏳️Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -843,18 +844,18 @@ def rename(params, mounted_partitions,id, usuario_actual):
             if esta:
                 PI = v
             else:
-                print(f'archivo {insidepath} no existe')
+                printt(f'🏳️archivo {insidepath} no existe')
                 return
 def copy(params, mounted_partitions,id, usuario_actual):  
-    print(f'🏳️ <<RUNNING COPY {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'🏳️ <<RUNNING COPY {params} _ _ _ _ _ _ _ _ _ ')
     if id == None:
-        print("Error: The id is required.")
+        printt("🏳️Error: The id is required.")
         return
     try: 
         insidepath = params['path']
         destinypath = params['destino']
     except:
-        print("Error:Path must be specified.")
+        printt("🏳️Error:Path must be specified.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -862,7 +863,7 @@ def copy(params, mounted_partitions,id, usuario_actual):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🏳️Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -872,7 +873,7 @@ def copy(params, mounted_partitions,id, usuario_actual):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🏳️Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -885,7 +886,7 @@ def copy(params, mounted_partitions,id, usuario_actual):
             if esta:
                 PI = v
             else:
-                print(f'archivo {insidepath} no existe')
+                printt(f'🏳️archivo {insidepath} no existe')
                 return
         #print(PI)
         
@@ -896,7 +897,7 @@ def copy(params, mounted_partitions,id, usuario_actual):
             if esta:
                 PI_destino = v
             else:
-                print(f'archivo {destinypath} no existe')
+                printt(f'🏳️archivo {destinypath} no existe')
                 return
         #print(PI_destino)
         a,b,c,d = busca_espacio_libre(file,PI_destino,0)
@@ -913,7 +914,7 @@ def copy(params, mounted_partitions,id, usuario_actual):
             new_added_folderblock.b_content[0].b_inodo = inodo_copia_byte
             file.seek(byte_bloque)
             file.write(new_added_folderblock.pack())
-            print(f'archivo {insidepath} copiado a {destinypath}')
+            printt(f'🏳️archivo {insidepath} copiado a {destinypath}')
         if c==1:
             file.seek(b)
             #print("ESTE ES EL PI DESTINO")
@@ -923,18 +924,18 @@ def copy(params, mounted_partitions,id, usuario_actual):
             folder.b_content[d].b_inodo = inodo_copia_byte
             file.seek(b)
             file.write(folder.pack())
-            print(f'archivo {insidepath} copiado a {destinypath}')
+            printt(f'🏳️✅✅archivo {insidepath} copiado a {destinypath}')
             
 def move(params, mounted_partitions,id, usuario_actual):  
-    print(f'🚀 <<RUNNING MOVE {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'🚀 <<RUNNING MOVE {params} _ _ _ _ _ _ _ _ _ ')
     if id == None:
-        print("Error: The id is required.")
+        printt("🚀Error: The id is required.")
         return
     try: 
         insidepath = params['path']
         destinypath = params['destino']
     except:
-        print("Error:Path must be specified.")
+        printt("🚀Error:Path must be specified.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -942,7 +943,7 @@ def move(params, mounted_partitions,id, usuario_actual):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"🚀Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -952,7 +953,7 @@ def move(params, mounted_partitions,id, usuario_actual):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"Error: The file {full_path} does not exist.")
+        printt(f"🚀Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -968,9 +969,9 @@ def move(params, mounted_partitions,id, usuario_actual):
             if esta:
                 PI = v
             else:
-                print(f'archivo {insidepath} no existe')
+                printt(f'🚀archivo {insidepath} no existe')
                 return
-        #print(PI)
+        #printt(PI)
         
         lista_direcciones_destino = destinypath.split('/')[1:]
         PI_destino = superblock.s_inode_start
@@ -979,9 +980,9 @@ def move(params, mounted_partitions,id, usuario_actual):
             if esta:
                 PI_destino = v
             else:
-                print(f'archivo {destinypath} no existe')
+                printt(f'🚀archivo {destinypath} no existe')
                 return
-        #print(PI_destino)
+        #printt(PI_destino)
         a,b,c,d = busca_espacio_libre(file,PI_destino,0)
         inodo_copia_byte = PI
         if c == 0:
@@ -996,28 +997,28 @@ def move(params, mounted_partitions,id, usuario_actual):
             new_added_folderblock.b_content[0].b_inodo = inodo_copia_byte
             file.seek(byte_bloque)
             file.write(new_added_folderblock.pack())
-            print(f'archivo {insidepath} movido a {destinypath}')
+            printt(f'🚀archivo {insidepath} movido a {destinypath}')
         if c==1:
             file.seek(b)
-            #print("ESTE ES EL PI DESTINO")
-            #print(b)
+            #printt("ESTE ES EL PI DESTINO")
+            #printt(b)
             folder = FolderBlock.unpack(file.read(FolderBlock.SIZE))
             folder.b_content[d].b_name = lista_direcciones[-1]
             folder.b_content[d].b_inodo = inodo_copia_byte
             file.seek(b)
             file.write(folder.pack())
-            print(f'archivo {insidepath} movido a {destinypath}')
+            printt(f'🚀✅✅archivo {insidepath} movido a {destinypath}')
 def find(params, mounted_partitions,id, usuario_actual):  
-    print(f'🔍 <<RUNNING FIND {params} _ _ _ _ _ _ _ _ _ ')
-    print(f'\n\n🔻____________________________________\n')
+    printt(f'🔍 <<RUNNING FIND {params} _ _ _ _ _ _ _ _ _ ')
+    printt(f'\n\n🔻____________________________________\n')
     if id == None:
-        print("Error: The id is required.")
+        printt("Error: The id is required.")
         return
     try: 
         insidepath = params['path']
         name = params['name']
     except:
-        print("Error:Path must be specified.")
+        printt("Error:Path must be specified.")
         return
     partition = None
     for partition_dict in mounted_partitions:
@@ -1025,7 +1026,7 @@ def find(params, mounted_partitions,id, usuario_actual):
             partition = partition_dict[id]
             break
     if not partition:
-        print(f"Error: The partition with id {id} does not exist.")
+        printt(f"Error: The partition with id {id} does not exist.")
         return
     # Retrieve partition details.
     path = partition['path']
@@ -1035,7 +1036,7 @@ def find(params, mounted_partitions,id, usuario_actual):
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
     if not os.path.exists(full_path):
-        print(f"⚠️ Error: The file {full_path} does not exist.")
+        printt(f"⚠️ Error: The file {full_path} does not exist.")
         return
     with open(full_path, "rb+") as file:
         file.seek(inicio)
@@ -1049,13 +1050,13 @@ def find(params, mounted_partitions,id, usuario_actual):
             if esta:
                 PI = v
             else:
-                print(f'⚠️ archivo {insidepath} no existe')
+                printt(f'⚠️ archivo {insidepath} no existe')
                 return
-        #print(PI)
+        #printt(PI)
         global texto_de_find
         texto_de_find = ''
         if name != '*' and name != '?':
-            #print(f'entrando a find normal')
+            #printt(f'entrando a find normal')
             busca_en_todo_el_sistema(file,PI,0,'',name,0)
         else:
             texto_de_find = busca_en_todo_el_sistema_regex(file,PI,0,'',name,0)
@@ -1068,5 +1069,5 @@ def find(params, mounted_partitions,id, usuario_actual):
             table.add_row(['🏚️'])
             table.add_row([texto_de_find])
 
-        print(table)
-        print("🔺- - - - - - - - - - - - - - - - -")
+        printt(table)
+        printt("🔺- - - - - - - - - - - - - - - - -")

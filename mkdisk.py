@@ -5,8 +5,12 @@ import random
 from MBR import MBR
 from EBR import EBR
 from PARTICION import Partition
+from send import printt
+    
 def mkdisk(params):
-    print("\n💽 creating disk...")
+    printt("\n💽 creating disk...")
+
+    
     # Extract parameters with defaults if not provided
     size = params.get('size')
     filename = params.get('path')
@@ -16,6 +20,7 @@ def mkdisk(params):
     # Check mandatory parameters
     if not size or not filename:
         print("Both -size and -path parameters are mandatory!")
+        
         return
 
     # Calculate total size in bytes
@@ -25,11 +30,13 @@ def mkdisk(params):
         total_size_bytes = size * 1024 * 1024
     else:
         print(f"Invalid unit: {unit}")
+        
         return
 
     # Check fit value
     if fit not in ['BF', 'FF', 'WF']:
         print(f"Invalid fit value: {fit}")
+        
         return
 
     current_directory = os.getcwd()
@@ -47,7 +54,9 @@ def mkdisk(params):
     with open(path, "wb") as file:
         file.write(b'\0' * total_size_bytes)
 
-    print(f"**Disk created successfully at {path} with size {size}{unit}.")
+    printt(f"**Disk created successfully at {path} with size {size}{unit}.")
+    
+    
     example = MBR(params)
     with open(path, "rb+") as file:
         file.seek(0)
@@ -59,7 +68,7 @@ def mkdisk(params):
 
 def rmdisk(params):
     filename = params.get('path')
-
+    printt("\n💽 deleting disk...")
     # Check mandatory parameter
     if not filename:
         print("-path parameter is mandatory!")
@@ -79,7 +88,7 @@ def rmdisk(params):
 
     if response == 'yes':
         os.remove(full_path)
-        print(f"Disk {full_path} deleted successfully.")
+        printt(f"Disk {full_path} deleted successfully.")
     elif response == 'no':
         print("Disk deletion aborted.")
     else:
@@ -87,7 +96,7 @@ def rmdisk(params):
 
 import struct
 def fdisk(params):
-    print("\n📁 creating partition..."+str(params))
+    printt("\n📁 creating partition..."+str(params))
     filename = params.get('path')
     current_directory = os.getcwd()
     full_path= f'{current_directory}/discos_test{filename}'
@@ -211,7 +220,7 @@ def fdisk(params):
                         nueva_particion.byte_inicio = byteinicio
                         partitions[i] = nueva_particion
                         item = nueva_particion
-                        print(f"Partition {partitions[i]} created successfully.")
+                        printt(f"📁✅✅Partition {partitions[i]} created successfully.")
                         break 
             packed_objetos = b''.join([obj.pack() for obj in partitions])
             file.seek(struct.calcsize(MBR.FORMAT))
@@ -334,11 +343,11 @@ def fdisk(params):
                     file.write(ebr.pack())
                 return
             else:
-                print("No available space for the partition using WF algorithm.")
+                printt("No available space for the partition using WF algorithm.")
         elif 'delete' in params:
             partition_name_to_delete = params.get('name')
             if not partition_name_to_delete:
-                print("Error: No partition name provided for deletion.")
+                printt("Error: No partition name provided for deletion.")
                 return
             partition_found = False
             for i, partition in enumerate(partitions):
@@ -346,7 +355,7 @@ def fdisk(params):
                     # Confirm deletion
                     user_input = input(f"Are you sure you want to delete the partition named {partition_name_to_delete}? (yes/no): ")
                     if user_input.lower() != "yes":
-                        print("Deletion aborted by the user.")
+                        printt("Deletion aborted by the user.")
                         return
 
                     partition_found = True
@@ -365,17 +374,17 @@ def fdisk(params):
                     packed_objetos = b''.join([obj.pack() for obj in partitions])
                     file.seek(struct.calcsize(MBR.FORMAT))
                     file.write(packed_objetos)
-                    print(f"Partition {partition_name_to_delete} has been deleted successfully.")
+                    printt(f"📁✅✅Partition {partition_name_to_delete} has been deleted successfully.")
                     return
 
             if not partition_found:
-                print(f"Error: Partition {partition_name_to_delete} not found.")
+                printt(f"📁Error: Partition {partition_name_to_delete} not found.")
                 return
         elif 'add' in params:
             # Get the name of the partition to resize
             partition_name_to_resize = params.get('name')
             if not partition_name_to_resize:
-                print("Error: No partition name provided for resizing.")
+                printt("Error: No partition name provided for resizing.")
                 return
 
             # Get the size to add to the partition
@@ -391,7 +400,7 @@ def fdisk(params):
                 
                 additional_size = additional_size * multiplier
             except ValueError:
-                print("Error: Invalid value for additional size.")
+                printt("📁Error: Invalid value for additional size.")
                 return
 
             partition_found = False
@@ -420,21 +429,21 @@ def fdisk(params):
                         partition.actual_size += additional_size
                         
                         if partition.actual_size <= 0:
-                            print("⚠️  Error: particion de tamaño negativo")
+                            printt("⚠️  Error: particion de tamaño negativo")
                             return
                         # Update the partition table in the file
                         packed_objetos = b''.join([obj.pack() for obj in partitions])
                         file.seek(struct.calcsize(MBR.FORMAT))
                         file.write(packed_objetos)
                         print(str(partition))
-                        print(f"✅  Partition {partition_name_to_resize} has been resized successfully.")
+                        printt(f"📁✅✅  Partition {partition_name_to_resize} has been resized successfully.")
                         
                     else:
-                        print(f"⚠️  Error: Not enough space to extend the partition {partition_name_to_resize}.")
+                        print(f"📁⚠️  Error: Not enough space to extend the partition {partition_name_to_resize}.")
                     return
 
             if not partition_found:
-                print(f"Error: Partition {partition_name_to_resize} not found.")
+                print(f"📁⚠️Error: Partition {partition_name_to_resize} not found.")
                 return
 
                     
